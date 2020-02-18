@@ -1,0 +1,50 @@
+﻿
+.allAccount_table, .allDepartment_table, .punchLog_table, .allTimeRule_table, .allGroup_table{
+  text-align:center;
+  margin-left:auto; 
+  margin-right:auto;
+  font-size:30px;
+}
+
+#groupList td[name='groupAuthority']{
+  text-align:left !important;
+  /*margin-left:auto; 
+  margin-right:auto;*/
+}
+
+.template, #timeRuleDiv, #groupRuleDiv{
+  display:none;
+}
+
+#rePunchBtn{
+  display: none;
+  position: relative;
+  left: 5px;
+}
+
+
+input[name='punchOption']{
+  zoom:200%;
+}
+
+.forRadio{
+  font-size:30px;
+}
+
+.forChkBox{
+  font-size:20px;
+  margin: auto 10px;
+}
+.forChkBox > [type='checkbox']{
+  zoom: 125%;
+}
+
+tr[name='groupRow'] td, tr[name='addGroupRow'] td{
+  vertical-align: middle;
+}
+
+
+
+
+
+
