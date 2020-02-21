@@ -66,7 +66,7 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-        #endregion
+        #endregion  //timeRule
 
         //-----------------------------------------------------------------------------------------------------------
 
@@ -120,8 +120,58 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-
-        #endregion
+        #endregion  //group
         
+        //-----------------------------------------------------------------------------------------------------------
+
+        #region sp date
+
+        public object GetAllSpecialDate(){
+            var query = _DbContext.specialdate.Select(b=> new{
+                b.ID, b.date, b.status, b.note
+            });
+            return query.ToList();
+        }
+
+        public int AddSpecialTime(SpecialDate newData){
+            int count = 0;
+            try{
+                _DbContext.specialdate.Add(newData);
+                count = _DbContext.SaveChanges();
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            return count;
+        }
+
+        public int DelSpecialDate(int spDateID){
+            int count = 0;
+            var context = _DbContext.specialdate.FirstOrDefault(b=>b.ID == spDateID);
+            if(context != null){
+                _DbContext.specialdate.Remove(context);
+                count = _DbContext.SaveChanges();
+            }
+            return count;
+        }
+
+        public int UpdateSpecialTime(SpecialDate updateData){
+            int count = 0;
+            try{
+                var context = _DbContext.specialdate.FirstOrDefault(b=>b.ID == updateData.ID);
+                if(context != null){
+                    context.date = updateData.date;
+                    context.status = updateData.status;
+                    context.note = updateData.note;
+                    context.lastOperaAccID = updateData.lastOperaAccID;
+                    context.updateTime = updateData.updateTime;
+                    count = _DbContext.SaveChanges();
+                }
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            return count;
+        }
+
+        #endregion  //sp date
     }
 }

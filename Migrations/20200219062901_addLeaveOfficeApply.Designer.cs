@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20200219062901_addLeaveOfficeApply")]
+    partial class addLeaveOfficeApply
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,35 +241,6 @@ namespace practice_mvc02.Migrations
                         .IsUnique();
 
                     b.ToTable("punchlogwarns");
-                });
-
-            modelBuilder.Entity("practice_mvc02.Models.dataTable.SpecialDate", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("date")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("lastOperaAccID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("note")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<int>("status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("updateTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("specialdate");
                 });
 
             modelBuilder.Entity("practice_mvc02.Models.dataTable.WorkTimeRule", b =>

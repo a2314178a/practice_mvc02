@@ -15,9 +15,6 @@ namespace practice_mvc02.Repositories
             
         }
 
-        
-
-
         public PunchCardLog GetTodayPunchLog(int employeeID, WorkTimeRule thisWorkTime){
             //
             DateTime sDateTime = DateTime.Now.Date;
@@ -52,17 +49,13 @@ namespace practice_mvc02.Repositories
         }
 
         public object GetAllPunchLogByID(int employeeID){
-            object result = null;
             var query = from a in _DbContext.punchcardlogs
                         where a.accountID == employeeID
                         orderby a.logDate
                         select new{
                             a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus
                         };
-            if(query.Count()>0){
-                result = query.ToList();
-            }
-            return result;
+            return query.ToList();
         }
 
         public int AddPunchCardLog(PunchCardLog newData){
@@ -126,6 +119,22 @@ namespace practice_mvc02.Repositories
                 result = query.ToList()[0];
             }
             return result;
+        }
+
+        public void updatePunchLogWarn(int punchLogID){
+            var context = _DbContext.punchlogwarns.FirstOrDefault(b=>b.punchLogID == punchLogID);
+            if(context != null){
+                context.warnStatus = 1;
+                context.updateTime = DateTime.Now;
+                _DbContext.SaveChanges();
+            }
+        }
+
+
+
+        public List<PunchCardLog> GetAllPunchLogWithWarn(){
+            var query = _DbContext.punchcardlogs.Where(b=>b.punchStatus == 0 || b.offlineTime.Year == 1);
+            return query.ToList();
         }
 
     }

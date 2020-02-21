@@ -12,14 +12,18 @@ namespace practice_mvc02.Repositories
             
         }
 
-        public Account Login(string account, string password)
+        public object Login(string account, string password)
         {
-            Account result = null;
-            var query = _DbContext.accounts.Where(b=>b.account == account && b.password == password);
-            if(query.Count()>0){
-                result = query.ToList()[0]; 
-            }
-            return result; 
+            //var query = _DbContext.accounts.FirstOrDefault(b=>b.account == account && b.password == password);  
+            var query = from a in _DbContext.accounts
+                       join b in _DbContext.grouprules on a.groupID equals b.ID
+                       join c in _DbContext.departments on a.departmentID equals c.ID
+                       where a.account == account && a.password == password
+                       select new{
+                           a.ID, a.userName, a.departmentID, a.accLV, a.groupID,
+                           b.ruleParameter, c.principalID
+                       };
+            return query.Count() == 1? query.ToList()[0] : null;
         }
 
         public int UpdateTimeStamp(int id, string timeStamp, DateTime updateTime)
@@ -32,10 +36,14 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-        public int getThisGroupRuleVal(int groupID){
+        /*public int getThisGroupRuleVal(int groupID){
             var query = _DbContext.grouprules.FirstOrDefault(b=>b.ID == groupID);
             return query == null ? 0 : query.ruleParameter;
         }
+        public int getThisPrincipalID(int departID){
+            var query = _DbContext.departments.FirstOrDefault(b=>b.ID == departID);
+            return query == null ? 0 : query.principalID;
+        }*/
         
     }
 }

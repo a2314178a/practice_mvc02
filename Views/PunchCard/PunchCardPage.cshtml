@@ -18,6 +18,16 @@
                 <div class="col-12">
                     
                     <div id="punchCardPage">
+                        
+                        <ul class="nav nav-tabs justify-content-end" group="table">                         
+                            <span style="width:30px;"></span>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" onclick="showPunchCardPage();">打卡</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showPunchLogPage();">打卡紀錄</a>
+                            </li>
+                        </ul>
 
                         <div style="text-align:center;">
                             <div style="margin:50px auto 100px;">
@@ -31,7 +41,7 @@
                             </div>
                             <div style="margin:20px;">
                                 <a href="javascript:void(0);" id="punchCardBtn" class="btn btn-primary" style="zoom:200%">打卡</a>
-                                <a href="javascript:void(0);" id="rePunchBtn" class="btn btn-primary" style="zoom:200%" onclick="rePunchCardFn();">再次打卡</a>
+                                @* <a href="javascript:void(0);" id="rePunchBtn" class="btn btn-primary" style="zoom:200%" onclick="rePunchCardFn();">再次打卡</a> *@
                             </div>
                             <div><h4 id="punchTimeText"></h4></div>
                             <div style="margin:20px;">

@@ -13,6 +13,8 @@ namespace practice_mvc02.Repositories
         public DbSet<PunchCardLog> punchcardlogs {get; set;}
         public DbSet<WorkTimeRule> worktimerules {get; set;}
         public DbSet<PunchLogWarn> punchlogwarns {get; set;}
+        public DbSet<LeaveOfficeApply> leaveofficeapplys {get; set;}
+        public DbSet<SpecialDate> specialdate {get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {       
@@ -26,6 +28,7 @@ namespace practice_mvc02.Repositories
             
             modelBuilder.Entity<WorkTimeRule>().HasIndex(b=> new{b.startTime, b.endTime}).IsUnique();
             modelBuilder.Entity<PunchLogWarn>().HasIndex(b=>b.punchLogID).IsUnique();
+            modelBuilder.Entity<PunchCardLog>().HasIndex(b=>new{b.accountID, b.logDate}).IsUnique();
         }
     }
 }

@@ -16,11 +16,17 @@ $(document).ready(function() {
 
 });//.ready function
 
+function showPunchCardPage(){
+    window.location.href = "/PunchCard/";
+}
+function showPunchLogPage(){
+    window.location.href = "/PunchCard/Index?page=log";
+}
+
 
 function showTime(){
     var dt = myObj.dateTimeFormat();
-    var weekList = ['日', '一', '二', '三', '四', '五', '六']; 
-    var dateText = dt.year + "年" + dt.month + "月" + dt.day + "日" + " 星期" + weekList[dt.week];
+    var dateText = dt.year + "年" + dt.month + "月" + dt.day + "日" + " " + dt.twWeek;
     var timeText = dt.hour + '時' + dt.minute + '分' + dt.second + '秒';
     $("#dateYMDW").text(dateText);
     $("#dateHMS").text(timeText);
@@ -64,16 +70,19 @@ function chkPunchOptionStatus(){
     }else if(optionVal == 0){
         if(myObj.offlineStatus){
             $("#punchCardBtn").addClass("btn-success").removeClass("btn-primary");
-            $("#punchCardBtn").css('pointer-events', "none").text("下班已打卡");
+            $("#punchCardBtn").text("");
+            var msg = "下班已打卡<br/><span style='font-size:10px'>(點選再次打卡)</span>";
+            var btn = $("#punchCardBtn").append(msg);
+            //btn.html(btn.html().replace(/\n/g, "<br/>"));
             $("#punchTimeText").text("打卡時間 : " + myObj.offlineTime);
-            $("#rePunchBtn").show();
+            //$("#rePunchBtn").show();
         }
     }
 }
 
 function punchCardFn(){
     var optionVal = $('input[name=punchOption]:checked').val();
-    if(isNaN(optionVal)){
+    if(isNaN(optionVal || (optionVal == 1 && myObj.onlineStatus))){
         alert("請點選打卡選項");
         return;
     }
@@ -82,7 +91,7 @@ function punchCardFn(){
         switch(res){
             case 1: getTodayPunchStatus(); break;
             case 2: alert("上班已打卡"); break;
-            case 3: alert("下班已打卡"); break;
+            case 3: break;
             case 4: alert("不能補打上班時間"); break;
         }
     }

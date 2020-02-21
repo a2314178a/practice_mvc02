@@ -34,23 +34,52 @@ namespace practice_mvc02.Controllers
             }
         }
 
-        public IActionResult selectPage(int type=1){
+        public IActionResult selectPage(int type){
             ViewBag.ruleVal = ruleVal;
             ViewData["loginName"] = loginName;
             ViewBag.Auth = "Y";
+            ViewBag.Page = type==2 ? "leave" : "punch";
             ViewBag.loginAccLV = loginAccLV;
             switch(type){
-                case 1: return View("PunchWarnPage");
-                case 2: return View("TakeRestSignPage");
-                case 3: return View("OutsideSignPage");
+                case 1: 
+                case 2: return View("ManagerSignPage");
                 default: return RedirectToAction("logOut", "Home");
             }   
         }
 
         //---------------------------------------------------------------------------------------
         
+        #region punchWarn
         
+        public object getPunchLogWarn(){
+            return Repository.GetPunchLogWarn((int)loginID);
+        }
 
+        public int ignorePunchLogWarn(int punchLogID){
+            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.applySign)==0){
+                return -2;
+            }
+            return Repository.IgnorePunchLogWarn(punchLogID);
+        }
+
+        #endregion //punchWarn
+        
+        //--------------------------------------------------------------------------------------------------------
+
+        #region  LeaveOffice
+
+        public object getEmployeeApplyLeave(int page=0){
+            return Repository.GetEmployeeApplyLeave((int)loginID, page);
+        }
+
+        public int isAgreeApplyLeave(int applyLeaveID, int isAgree){
+            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.applySign)==0){
+                return -2;
+            }
+            return Repository.IsAgreeApplyLeave(applyLeaveID, isAgree, (int)loginID);
+        }
+
+        #endregion //leaveOffice
         
     }
 }

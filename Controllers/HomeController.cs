@@ -38,23 +38,23 @@ namespace practice_mvc02.Controllers
 
         public int login(string account, string password){
             var md5password = loginFn.GetMD5((account+password));
-            Account userData = Repository.Login(account, md5password);
-            //Account userData = Repository.Login(account, password);
+            //Account userData = Repository.Login(account, md5password);
+            object userData = Repository.Login(account, md5password);
             if(userData != null)
             {
                 DateTime nowTime= DateTime.Now;
-                DateTime Jan1st1970 = new DateTime  (1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
+                DateTime Jan1st1970 = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
                 long timeStamp = Convert.ToInt64((nowTime - Jan1st1970).TotalMilliseconds);
-                int count = Repository.UpdateTimeStamp(userData.ID, timeStamp.ToString(), nowTime);
+                int count = Repository.UpdateTimeStamp((int)getObjectValue("ID", userData), timeStamp.ToString(), nowTime);
                 if(count == 1){
                     _session.SetString("loginTimeStamp", timeStamp.ToString());
-                    _session.SetInt32("loginID", userData.ID);
-                    _session.SetInt32("loginAccLV", userData.accLV);
-                    _session.SetString("loginName", userData.userName.ToString());
-                    _session.SetInt32("loginDepartmentID", userData.departmentID);
-                    _session.SetInt32("loginGroupID", userData.groupID);
-                    int ruleVal = Repository.getThisGroupRuleVal((int)userData.groupID);
-                    _session.SetInt32("ruleVal", ruleVal);
+                    _session.SetInt32("loginID", (int)getObjectValue("ID", userData));
+                    _session.SetInt32("loginAccLV", (int)getObjectValue("accLV", userData));
+                    _session.SetString("loginName", (string)getObjectValue("userName", userData).ToString());
+                    _session.SetInt32("loginDepartmentID", (int)getObjectValue("departmentID", userData));
+                    _session.SetInt32("loginGroupID", (int)getObjectValue("groupID", userData));
+                    _session.SetInt32("ruleVal", (int)getObjectValue("ruleParameter", userData));
+                    _session.SetInt32("principalID", (int)getObjectValue("principalID", userData));
                     return 1;   
                 }
                 else{
@@ -71,7 +71,7 @@ namespace practice_mvc02.Controllers
                 return logOut();
             }
             if(ruleVal > 0){
-                if((ruleVal & ruleCode.punchAndLog) >0){
+                if((ruleVal & ruleCode.baseActive) >0){
                     return RedirectToAction("Index", "PunchCard");
                 }
                 else if((ruleVal & ruleCode.departEmployeeList) >0 || (ruleVal & ruleCode.allEmployeeList) >0){
@@ -99,7 +99,9 @@ namespace practice_mvc02.Controllers
 
 
 
-
+        public dynamic getObjectValue(string key, object obj){
+            return obj.GetType().GetProperty(key).GetValue(obj);
+        }
         
 
 

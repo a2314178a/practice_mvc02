@@ -20501,6 +20501,11 @@
   "RootNamespace": "practice_mvc02",
   "Documents": [
     {
+      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\ApplicationSign\\ManagerSignPage.cshtml",
+      "TargetPath": "Views\\ApplicationSign\\ManagerSignPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "FileKind": "mvc"
@@ -20508,11 +20513,6 @@
     {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\Home\\Index.cshtml",
       "TargetPath": "Views\\Home\\Index.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\ApplicationSign\\TakeRestSignPage.cshtml",
-      "TargetPath": "Views\\ApplicationSign\\TakeRestSignPage.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -20566,6 +20566,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\ApplyLeave\\ApplyLeavePage.cshtml",
+      "TargetPath": "Views\\ApplyLeave\\ApplyLeavePage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\Home\\Welcome.cshtml",
       "TargetPath": "Views\\Home\\Welcome.cshtml",
       "FileKind": "mvc"
@@ -20583,16 +20588,6 @@
     {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\PunchCard\\PunchCardPage.cshtml",
       "TargetPath": "Views\\PunchCard\\PunchCardPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\ApplicationSign\\PunchWarnPage.cshtml",
-      "TargetPath": "Views\\ApplicationSign\\PunchWarnPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\ApplicationSign\\OutsideSignPage.cshtml",
-      "TargetPath": "Views\\ApplicationSign\\OutsideSignPage.cshtml",
       "FileKind": "mvc"
     }
   ],

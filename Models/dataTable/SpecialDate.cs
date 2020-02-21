@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace practice_mvc02.Models.dataTable
 {
-    public class PunchLogWarn
+    public class SpecialDate
     {
         [Key]
         public int ID {get;set;}
-        public int accountID {get; set;}
-        public int principalID {get; set;}
-        public int punchLogID {get; set;}
-        public int warnStatus {get; set;}
+        public DateTime date {get; set;}
+        public int status {get; set;}
+        public string note {get; set;}
+        public int lastOperaAccID {get; set;}
         public DateTime createTime {get; set;}
         public DateTime updateTime {get; set;}
     }

@@ -3,7 +3,7 @@ namespace practice_mvc02.Models
 {
     public class groupRuleCode
     {
-        public int punchAndLog {get;}
+        public int baseActive {get;}
         public int departEmployeeList {get;}
         public int allEmployeeList {get;}
         public int employeeEdit {get;}
@@ -14,14 +14,14 @@ namespace practice_mvc02.Models
     
     
         public groupRuleCode(){
-            this.punchAndLog = 0x0001; //打卡與紀錄
+            this.baseActive = 0x0001; //打卡/紀錄/請假/外出
             this.editPunchLog = 0x0002;    //編輯出勤紀錄
             this.departEmployeeList = 0x0004;  //查看部門員工
             this.allEmployeeList = 0x0008; //查看所有員工
             this.employeeEdit = 0x0010;  //編輯員工
             this.departmentList = 0x0020;  //部門職位相關
             this.setRule = 0x0040; //設定規則
-            this.applySign = 0x0080;
+            this.applySign = 0x0080;    //相關審核
         } 
     }
 

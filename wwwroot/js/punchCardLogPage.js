@@ -6,19 +6,24 @@ $(document).ready(function() {
 
 });//.ready function
 
+function showPunchCardPage(){
+    window.location.href = "/PunchCard/Index";
+}
+function showPunchLogPage(){
+    window.location.href = "/PunchCard/Index?page=log";
+}
+
 
 function getAllPunchLogByID(employeeID=0){
     myObj.lookEmployeeID = employeeID;
     var successFn = function(res){
         refreshPunchLogList(res);
     };
-    myObj.rAjaxFn("get", "/PunchCard/getAllPunchLogByID", {employeeID: employeeID}, successFn);
+    myObj.rAjaxFn("post", "/PunchCard/getAllPunchLogByID", {employeeID: employeeID}, successFn);
 }
 
 function refreshPunchLogList(res){
     $("#punchLogList").empty();
-    if(res == undefined)
-        return;
     res.forEach(function(value){
         var row = $(".template").find("[name='punchLogRow']").clone();
         var dtOn = myObj.dateTimeFormat(value.onlineTime);
@@ -27,8 +32,8 @@ function refreshPunchLogList(res){
         var logDate = workDate.year + "-" + workDate.month + "-" + workDate.day;
         var dtOnTime = dtOn.year == 1? "" : (dtOn.hour + ":" + dtOn.minute + ":" + dtOn.second);
         var dtOffTime = dtOff.year == 1? "" : (dtOff.hour + ":" + dtOff.minute + ":" + dtOff.second);
+
         var status = "";
-        
         status = (value.punchStatus & 0x02) ? status+="遲到/" : status;
         status = (value.punchStatus & 0x04) ? status+="早退/" : status;
         status = (value.punchStatus & 0x08) ? status+="加班/" : status;

@@ -21,44 +21,70 @@
                         <ul class="nav nav-tabs justify-content-end" group="table">                         
                             <span style="width:30px;"></span>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" name="timeRule" onclick="showTimeRule();">上班時間設定</a>
+                                <a class='nav-link @(@ViewBag.Page=="timeRule"?"active":"")' href="#" name="timeRule" onclick="showSetRulePage('timeRule');">上班時間設定</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" name="groupRule" onclick="showGroupRule();">動作權限設定</a>
+                                <a class='nav-link @(@ViewBag.Page=="specialDate"?"active":"")' href="#" name="specialDate" onclick="showSetRulePage('specialDate');">特殊日期設定</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class='nav-link @(@ViewBag.Page=="groupRule"?"active":"")' href="#" name="groupRule" onclick="showSetRulePage('groupRule');">動作權限設定</a>
                             </li>
                         </ul>
 
-                        <div id="timeRuleDiv">
-                            <table class="table table-hover table-bordered allTimeRule_table">
-                                <thead class="thead-dark" >
-                                    <tr>
-                                        <th scope="col">班別名稱</th>
-                                        <th scope="col">上班時間</th>
-                                        <th scope="col">下班時間</th>
-                                        <th scope="col">遲到時間</th>
-                                        <th scope="col">管理動作</th>
-                                    </tr>
-                                </thead> 
-                                <tbody id="timeRuleList">
-                                </tbody>
-                            </table>
-                            <a href="javascript:void(0);" class="btn btn-primary btnActive add_timeRule" style="float:right" onclick="showAddTimeRuleRow();">新增規則</a>   
-                        </div> 
-
-                        <div id="groupRuleDiv">
-                            <table class="table table-hover table-bordered allGroup_table">
-                                <thead class="thead-dark" >
-                                    <tr>
-                                        <th scope="col">群組名稱</th>
-                                        <th scope="col">動作權限</th>
-                                        <th scope="col">管理動作</th>
-                                    </tr>
-                                </thead> 
-                                <tbody id="groupList">
-                                </tbody>
-                            </table>
-                            <a href="javascript:void(0);" class="btn btn-primary btnActive add_group" style="float:right" onclick="showAddGroupRow();">新增群組</a>   
-                        </div> 
+                        @if(ViewBag.Page=="timeRule")
+                        {
+                            <div id="timeRuleDiv">
+                                <table class="table table-hover table-bordered allTimeRule_table">
+                                    <thead class="thead-dark" >
+                                        <tr>
+                                            <th scope="col">班別名稱</th>
+                                            <th scope="col">上班時間</th>
+                                            <th scope="col">下班時間</th>
+                                            <th scope="col">遲到時間</th>
+                                            <th scope="col">管理動作</th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody id="timeRuleList">
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0);" class="btn btn-primary btnActive add_timeRule" style="float:right" onclick="showAddTimeRuleRow();">新增規則</a>   
+                            </div> 
+                        }
+                        else if(@ViewBag.Page == "specialDate")
+                        {
+                            <div id="specialDateDiv">
+                                <table class="table table-hover table-bordered specialDate_table">
+                                    <thead class="thead-dark" >
+                                        <tr>
+                                            <th scope="col">日期</th>
+                                            <th scope="col">狀態</th>
+                                            <th scope="col">備註</th>
+                                            <th scope="col">管理動作</th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody id="specialDateList">
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0);" class="btn btn-primary btnActive add_spDate" style="float:right" onclick="showAddSpDateRow();">新增日期</a>   
+                            </div>
+                        } 
+                        else if(ViewBag.Page == "groupRule")
+                        {
+                            <div id="groupRuleDiv">
+                                <table class="table table-hover table-bordered allGroup_table">
+                                    <thead class="thead-dark" >
+                                        <tr>
+                                            <th scope="col">群組名稱</th>
+                                            <th scope="col">動作權限</th>
+                                            <th scope="col">管理動作</th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody id="groupList">
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0);" class="btn btn-primary btnActive add_group" style="float:right" onclick="showAddGroupRow();">新增群組</a>   
+                            </div>
+                        }
 
                     </div>
                 </div>
@@ -69,70 +95,110 @@
 
         <div class="template">
             <table>
-
-                <tr name="timeRuleRow">
-                    <td scope="col" name="name"></td>
-                    <td scope="col" name="startTime"></td>
-                    <td scope="col" name="endTime"></td>
-                    <td scope="col" name="lateTime"></td>
-                    <td scope="col" width="20%">
-                        <a href="javascript:void(0);" class="btn btn-primary edit_timeRule btnActive" >編輯</a>
-                        <a href="javascript:void(0);" class="btn btn-danger del_timeRule btnActive" >刪除</a>
-                    </td>
-                </tr>
-                <tr name="addTimeRuleRow">
-                    <td scope="col" name="name">
-                        <input type='text' name="newName" style='zoom:75%'>
-                    </td>
-                    <td scope="col" name="startTime">
-                        <input type='time' name="newStartTime" style='zoom:75%'>
-                    </td>
-                    <td scope="col" name="endTime">
-                        <input type='time' name="newEndTime" style='zoom:75%'>
-                    </td>
-                    <td scope="col" name="lateTime">
-                       <input type='time' name="newLateTime" style='zoom:75%'>
-                    </td>
-                    <td scope="col" width="20%">
-                        <a href="javascript:void(0);" class="btn btn-primary create_timeRule" >新增</a>
-                        <a href="javascript:void(0);" class="btn btn-primary update_timeRule" >更新</a>
-                        <a href="javascript:void(0);" class="btn btn-danger cancel_timeRule" >取消</a>
-                    </td>
-                </tr> 
-
-
-                <tr name="groupRow">
-                    <td scope="col" name="groupName"></td>
-                    <td scope="col" name="groupAuthority"></td>
-                    <td scope="col" width="20%">
-                        <a href="javascript:void(0);" class="btn btn-primary edit_group btnActive" >編輯</a>
-                        <a href="javascript:void(0);" class="btn btn-danger del_group btnActive" >刪除</a>
-                    </td>
-                </tr>
-                <tr name="addGroupRow">
-                    <td scope="col" name="groupName">
-                        <input type='text' name="newGroupName" style='zoom:75%'>
-                    </td>
-                    <td scope="col" name="newGroupAuthority"></td>
-                    <td scope="col" width="20%">
-                        <a href="javascript:void(0);" class="btn btn-primary create_group" >新增</a>
-                        <a href="javascript:void(0);" class="btn btn-primary update_group" >更新</a>
-                        <a href="javascript:void(0);" class="btn btn-danger cancel_group" >取消</a>
-                    </td>
-                </tr> 
+                @if(ViewBag.Page=="timeRule")
+                {
+                    <tr name="timeRuleRow">
+                        <td scope="col" name="name"></td>
+                        <td scope="col" name="startTime"></td>
+                        <td scope="col" name="endTime"></td>
+                        <td scope="col" name="lateTime"></td>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary edit_timeRule btnActive" >編輯</a>
+                            <a href="javascript:void(0);" class="btn btn-danger del_timeRule btnActive" >刪除</a>
+                        </td>
+                    </tr>
+                    <tr name="addTimeRuleRow">
+                        <td scope="col" name="name">
+                            <input type='text' name="newName" style='zoom:75%'>
+                        </td>
+                        <td scope="col" name="startTime">
+                            <input type='time' name="newStartTime" style='zoom:75%'>
+                        </td>
+                        <td scope="col" name="endTime">
+                            <input type='time' name="newEndTime" style='zoom:75%'>
+                        </td>
+                        <td scope="col" name="lateTime">
+                        <input type='time' name="newLateTime" style='zoom:75%'>
+                        </td>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary create_timeRule" >新增</a>
+                            <a href="javascript:void(0);" class="btn btn-primary update_timeRule" >更新</a>
+                            <a href="javascript:void(0);" class="btn btn-danger cancel_timeRule" >取消</a>
+                        </td>
+                    </tr> 
+                }
+                else if(ViewBag.Page == "groupRule")
+                {
+                    <tr name="groupRow">
+                        <td scope="col" name="groupName"></td>
+                        <td scope="col" name="groupAuthority"></td>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary edit_group btnActive" >編輯</a>
+                            <a href="javascript:void(0);" class="btn btn-danger del_group btnActive" >刪除</a>
+                        </td>
+                    </tr>
+                    <tr name="addGroupRow">
+                        <td scope="col" name="groupName">
+                            <input type='text' name="newGroupName" style='zoom:75%'>
+                        </td>
+                        <td scope="col" name="newGroupAuthority"></td>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary create_group" >新增</a>
+                            <a href="javascript:void(0);" class="btn btn-primary update_group" >更新</a>
+                            <a href="javascript:void(0);" class="btn btn-danger cancel_group" >取消</a>
+                        </td>
+                    </tr> 
+                }
+                else if(@ViewBag.Page == "specialDate")
+                {
+                    <tr name="specialDateRow">
+                        <td scope="col" name="date"></td>
+                        <input type="hidden" name="statusVal">
+                        <td scope="col" name="status"></td>
+                        <td scope="col" name="note"></td>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary edit_spDate btnActive" >編輯</a>
+                            <a href="javascript:void(0);" class="btn btn-danger del_spDate btnActive" >刪除</a>
+                        </td>
+                    </tr>
+                    <tr name="addSpecialDateRow">
+                        <td scope="col" name="name">
+                            <input type='date' name="newDate" style='zoom:75%'>
+                        </td>
+                        <td scope="col">
+                            <select name="status">
+                                <option value="">請選擇</option>
+                                <option value="1">休假</option>
+                                <option value="2">上班</option>
+                            </select>
+                        </td>
+                        <td scope="col" name="note">
+                            <input type='text' name="newNote" style='zoom:75%'>
+                        </td>>
+                        <td scope="col" width="20%">
+                            <a href="javascript:void(0);" class="btn btn-primary create_spDate" >新增</a>
+                            <a href="javascript:void(0);" class="btn btn-primary update_spDate" >更新</a>
+                            <a href="javascript:void(0);" class="btn btn-danger cancel_spDate" >取消</a>
+                        </td>
+                    </tr> 
+                }
             </table>
-            <div name="chkBox">
-                <label class="forChkBox"><input type="checkbox" name="punch" value="0x0001">打卡/打卡紀錄</label>
-                <label class="forChkBox"><input type="checkbox" name="editEmployeePunchLog" value="0x0002">編輯員工出勤紀錄</label>
-                <br/>
-                <label class="forChkBox"><input type="checkbox" name="departEmployeeList" value="0x0004">查看部門員工</label>
-                <label class="forChkBox"><input type="checkbox" name="allEmployeeList" value="0x0008">查看所有員工</label>
-                <label class="forChkBox"><input type="checkbox" name="allEmployeeEdit" value="0x0010">編輯員工</label>
-                <br/>
-                <label class="forChkBox"><input type="checkbox" name="applySign" value="0x0080">相關簽核</label>
-                <label class="forChkBox"><input type="checkbox" name="department" value="0x0020">部門職位相關</label>
-                <label class="forChkBox"><input type="checkbox" name="setRule" value="0x0040">設定規則</label>
-            </div>
+            
+            @if(ViewBag.Page == "groupRule")
+            {
+                <div name="chkBox">
+                    <label class="forChkBox"><input type="checkbox" name="punch" value="0x0001">基本功能</label>
+                    <label class="forChkBox"><input type="checkbox" name="editEmployeePunchLog" value="0x0002">編輯員工出勤紀錄</label>
+                    <br/>
+                    <label class="forChkBox"><input type="checkbox" name="departEmployeeList" value="0x0004">查看部門員工</label>
+                    <label class="forChkBox"><input type="checkbox" name="allEmployeeList" value="0x0008">查看所有員工</label>
+                    <label class="forChkBox"><input type="checkbox" name="allEmployeeEdit" value="0x0010">編輯員工</label>
+                    <br/>
+                    <label class="forChkBox"><input type="checkbox" name="applySign" value="0x0080">相關簽核</label>
+                    <label class="forChkBox"><input type="checkbox" name="department" value="0x0020">部門職位相關</label>
+                    <label class="forChkBox"><input type="checkbox" name="setRule" value="0x0040">設定規則</label>
+                </div>
+            }
         </div>
 
 

@@ -26,26 +26,25 @@ namespace practice_mvc02.Controllers
             this.loginFn = new loginFunction(repository);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string page)
         {           
-             if(loginFn.isLoginInfo(loginID, loginAccLV) && (ruleVal & ruleCode.setRule) > 0){
-                return selectPage();
+            if(loginFn.isLoginInfo(loginID, loginAccLV) && (ruleVal & ruleCode.setRule) > 0){
+                return selectPage(page);
             }else{
                 return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
             }
         }
 
-       public IActionResult selectPage(){
+       public IActionResult selectPage(string page){
             ViewBag.ruleVal = ruleVal;
             ViewData["loginName"] = loginName;
             ViewBag.Auth = "Y";
             ViewBag.loginAccLV = loginAccLV;
+            ViewBag.Page = page;
             return View("SetRulePage");
         }
 
        //--------------------------------------------------------------------------------------
-
-
 
         #region timeRule
         public object getAllTimeRule(){
@@ -78,7 +77,7 @@ namespace practice_mvc02.Controllers
         }
         #endregion //timeRule
         
-
+        //-----------------------------------------------------------------------------------------------------
 
         #region GroupRule
         public object getAllGroup(){
@@ -112,15 +111,38 @@ namespace practice_mvc02.Controllers
 
         #endregion  //GroupRule
 
+        //-----------------------------------------------------------------------------------------------------
+
+        #region specialDate
+        
+        public object getAllSpecialDate(){
+            return Repository.GetAllSpecialDate();
+        }
+
+        public int addUpSpecialTime(SpecialDate spDate){
+            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.setRule)==0){
+                return -2;
+            }
+            spDate.lastOperaAccID = (int)loginID;
+            if(spDate.ID == 0){     
+                spDate.createTime = DateTime.Now;
+                return Repository.AddSpecialTime(spDate);
+            }else{
+                spDate.updateTime = DateTime.Now;
+                return Repository.UpdateSpecialTime(spDate);
+            } 
+        }
+
+        public int delSpecialDate(int spDateID){
+            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.setRule)==0){
+                return -2;
+            }
+            return Repository.DelSpecialDate(spDateID);
+        }
+
+        #endregion //specialDate
+
 
         
-
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

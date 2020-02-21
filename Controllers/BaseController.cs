@@ -24,6 +24,7 @@ namespace practice_mvc02.Controllers
         protected string loginTimeStamp;
         protected int? loginDepartmentID;
         protected int? ruleVal;
+        protected int? principalID;
         public groupRuleCode ruleCode {get;}
 
         public BaseController(IHttpContextAccessor httpContextAccessor)
@@ -36,6 +37,7 @@ namespace practice_mvc02.Controllers
             this.loginDepartmentID = _session.GetInt32("loginDepartmentID");
             this.loginGroupID = _session.GetInt32("loginGroupID");
             this.ruleVal = _session.GetInt32("ruleVal");
+            this.principalID = _session.GetInt32("principalID");
             this.ruleCode = new groupRuleCode();
         }
 

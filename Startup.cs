@@ -39,6 +39,7 @@ namespace practice_mvc02
             {
                 //config.Filters.Add(new AuthorizationFilter(accountService));
             });
+            services.AddTimedJob(); //Add TimedJob services
             services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體中
             
             services.AddTransient<MasterRepository>();
@@ -50,6 +51,7 @@ namespace practice_mvc02
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {       
+            app.UseTimedJob();  //使用TimedJob
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

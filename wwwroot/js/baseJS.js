@@ -122,6 +122,12 @@
             minute: myObj.add0(dateTime.getMinutes()),
             second: myObj.add0(dateTime.getSeconds()),
         }
+        var weekList = ['日', '一', '二', '三', '四', '五', '六']; 
+        dt.twWeek = "星期" + weekList[dt.week];
+        dt.worldWeek = "(" + weekList[dt.week] + ")";
+        dt.ymdText = dt.year + "/" + dt.month + "/" + dt.day;
+        dt.hmsText = dt.hour + ":" + dt.minute + ":" + dt.second;
+        dt.hmText = dt.hour + ":" + dt.minute;
         return dt;
     }
     add0(num){

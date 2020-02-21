@@ -34,7 +34,7 @@ namespace practice_mvc02.Models
             var eWorkDt = getObjectValue("eWorkDt", workTime);
             var sPunchDT = getObjectValue("sPunchDT", workTime);
             var workAllTime = getObjectValue("workAllTime", workTime);
-            int resultCount = 0; //0:操作異常 1:成功 2:上班已打卡 3:下班已打卡 4:不能補打上班時間
+            int resultCount = 0; //0:操作異常 1:成功 2:上班已打卡 3:      4:不能補打上班時間
             var statusCode = 0;
             if(logData == null) //今日皆未打卡      //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 
             {
@@ -81,7 +81,7 @@ namespace practice_mvc02.Models
             return resultCount;
         }
 
-        public int forcePunchLogProcess(PunchCardLog processLog, WorkTimeRule thisWorkTime, string action){
+        public int forcePunchLogProcess(PunchCardLog processLog, WorkTimeRule thisWorkTime, string action, string from=""){
             object workTime = workTimeProcess(thisWorkTime, processLog);
             var sWorkDt = getObjectValue("sWorkDt", workTime);
             var eWorkDt = getObjectValue("eWorkDt", workTime);
@@ -125,110 +125,12 @@ namespace practice_mvc02.Models
                 processLog.logDate = sWorkDt.Date;            
             }
             processLog.punchStatus = workAllTime ? psCode.normal : processLog.punchStatus;
-            return action == "update"? Repository.UpdatePunchCard(processLog) : Repository.AddPunchCardLog(processLog);
+            int result = action == "update"? Repository.UpdatePunchCard(processLog) : Repository.AddPunchCardLog(processLog);
+            if(action == "update" && from == "applySign" && result==1){
+                Repository.updatePunchLogWarn(processLog.ID);
+            }
+            return result;
         }
-        
-        
-        
-        /*public int forceAddPunchCardProcess(PunchCardLog newPunchLog, WorkTimeRule thisWorkTime){
-            object workTime = workTimeProcess(thisWorkTime, newPunchLog);
-            var sWorkDt = getObjectValue("sWorkDt", workTime);
-            var eWorkDt = getObjectValue("eWorkDt", workTime);
-            var sPunchDT = getObjectValue("sPunchDT", workTime);
-            var ePunchDT = getObjectValue("ePunchDT", workTime);
-            int resultCode = 0;     //0:操作異常 1:成功 
-
-            newPunchLog.lastOperaAccID = (int)loginID;
-            newPunchLog.createTime = DateTime.Now;
-            if(newPunchLog.onlineTime.Year != 1 && newPunchLog.offlineTime.Year != 1)//上下班時間皆有填寫
-            {  
-                newPunchLog.punchStatus = 1;    //punchStatus=  0:? 1:正常 2:缺卡 3:遲到 4:早退 5:加班
-                newPunchLog.logDate = newPunchLog.onlineTime.Date;
-                if(newPunchLog.onlineTime < sPunchDT){
-                    newPunchLog.onlineTime = newPunchLog.onlineTime.AddDays(1);
-                }
-                if(newPunchLog.onlineTime >= newPunchLog.offlineTime){  
-                    newPunchLog.offlineTime = newPunchLog.offlineTime.AddDays(1);   
-                }
-                if(newPunchLog.onlineTime > sWorkDt){
-                    newPunchLog.punchStatus = 3;
-                }else if(newPunchLog.offlineTime < eWorkDt){
-                    newPunchLog.punchStatus = 4;
-                }
-                resultCode = Repository.AddPunchCardLog(newPunchLog);
-            }
-            else
-            {  //上班或下班時間沒填
-                if(newPunchLog.onlineTime.Year !=1){    //填上班
-                    newPunchLog.logDate = newPunchLog.onlineTime.Date;
-                    newPunchLog.punchStatus = 0;
-                    if(newPunchLog.onlineTime > sWorkDt){
-                        newPunchLog.punchStatus = 3;
-                    }
-                    else if(DateTime.Now >= ePunchDT){
-                        newPunchLog.punchStatus = 2;
-                    }
-                }else{  //填下班
-                    newPunchLog.punchStatus = newPunchLog.offlineTime < eWorkDt ? 4 : 2;
-                    newPunchLog.logDate = newPunchLog.offlineTime.Date;
-                    if(sWorkDt.Date != eWorkDt.Date){
-                        newPunchLog.logDate = newPunchLog.logDate.AddDays(-1);
-                    }
-                }
-                resultCode = Repository.AddPunchCardLog(newPunchLog);
-            }
-            return resultCode;
-        }
-
-        public int forceUpdatePunchCardProcess(PunchCardLog updatePunchLog, WorkTimeRule thisWorkTime){
-            object workTime = workTimeProcess(thisWorkTime, updatePunchLog);
-            var sWorkDt = getObjectValue("sWorkDt", workTime);
-            var eWorkDt = getObjectValue("eWorkDt", workTime);
-            var sPunchDT = getObjectValue("sPunchDT", workTime);
-            var ePunchDT = getObjectValue("ePunchDT", workTime);
-            int resultCode = 0;     //0:操作異常 1:成功 
-
-            updatePunchLog.lastOperaAccID = (int)loginID;
-            updatePunchLog.updateTime = DateTime.Now;
-            if(updatePunchLog.onlineTime.Year != 1 && updatePunchLog.offlineTime.Year != 1)//上下班時間皆有填寫
-            {  
-                updatePunchLog.punchStatus = 1;    //punchStatus=  0:? 1:正常 2:缺卡 3:遲到 4:早退 5:加班
-                updatePunchLog.logDate = updatePunchLog.onlineTime.Date;
-                if(updatePunchLog.onlineTime < sPunchDT){
-                    updatePunchLog.onlineTime = updatePunchLog.onlineTime.AddDays(1);
-                }
-                if(updatePunchLog.onlineTime >= updatePunchLog.offlineTime){  
-                    updatePunchLog.offlineTime = updatePunchLog.offlineTime.AddDays(1);   
-                }             
-                if(updatePunchLog.onlineTime > sWorkDt){
-                    updatePunchLog.punchStatus = 3;
-                }else if(updatePunchLog.offlineTime < eWorkDt){
-                    updatePunchLog.punchStatus = 4;
-                }
-                resultCode = Repository.UpdatePunchCard(updatePunchLog);
-            }
-            else
-            {  //上班或下班時間沒填
-                if(updatePunchLog.onlineTime.Year !=1){    //填上班
-                    updatePunchLog.logDate = updatePunchLog.onlineTime.Date;
-                    updatePunchLog.punchStatus = 0;
-                    if(updatePunchLog.onlineTime > sWorkDt){
-                        updatePunchLog.punchStatus = 3;
-                    }else if(DateTime.Now >= ePunchDT){
-                        updatePunchLog.punchStatus = 2;
-                    }
-                }else{  //填下班
-                    updatePunchLog.punchStatus = updatePunchLog.offlineTime < eWorkDt ? 4 : 2;
-                    updatePunchLog.logDate = updatePunchLog.offlineTime.Date;
-                    if(sWorkDt.Date != eWorkDt.Date){
-                        updatePunchLog.logDate = updatePunchLog.logDate.AddDays(-1);
-                    }
-                }
-                resultCode = Repository.UpdatePunchCard(updatePunchLog);
-            }
-            return resultCode;
-        }*/
-
         
         public object workTimeProcess(WorkTimeRule thisWorkTime, PunchCardLog customLog = null){
             DateTime sWorkDt = DateTime.Now.Date;  //online work dateTime
@@ -279,7 +181,9 @@ namespace practice_mvc02.Models
             return obj.GetType().GetProperty(key).GetValue(obj);
         }
 
-        
+        public void processPunchlogWarn(){
+            
+        }
         
     }
 }

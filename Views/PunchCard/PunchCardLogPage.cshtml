@@ -17,8 +17,22 @@
             <div class="row mx-0 align-items-center justify-content-center w-100">
                 <div class="col-12">
                     <div id="PunchCardLogPage" style="text-align:center;">
+                        
+                        @if(ViewBag.showNavBar)
+                        {
+                        <ul class="nav nav-tabs justify-content-end" group="table">                         
+                            <span style="width:30px;"></span>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showPunchCardPage();">打卡</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" onclick="showPunchLogPage();">打卡紀錄</a>
+                            </li>
+                        </ul>
+                        }
+
                         <div id="punchLogDiv">
-                            <div><h3>@ViewBag.punchLogName 的打卡紀錄</h3></div>
+                            <div style="margin:10px;"><h3>@ViewBag.punchLogName 的打卡紀錄</h3></div>
                             <table class="table table-hover table-bordered punchLog_table">
                                 <thead class="thead-dark" >
                                     <tr>

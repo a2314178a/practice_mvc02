@@ -198,6 +198,6 @@ C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\DepartmentLis
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\EmployeeList\subPage\addUpdateForm.cshtml.g.cs
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\SetRule\SetRulePage.cshtml.g.cs
 c:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Home\Welcome.cshtml.g.cs
-C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSign\OutsideSignPage.cshtml.g.cs
-C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSign\PunchWarnPage.cshtml.g.cs
-C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSign\TakeRestSignPage.cshtml.g.cs
+C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplyLeave\ApplyLeavePage.cshtml.g.cs
+C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSign\ManagerSignPage.cshtml.g.cs
+C:\work_project\practice_mvc02\bin\Debug\netcoreapp3.1\Pomelo.AspNetCore.TimedJob.dll

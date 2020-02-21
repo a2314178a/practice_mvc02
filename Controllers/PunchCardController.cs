@@ -12,6 +12,7 @@ using practice_mvc02.Models;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
+
 namespace practice_mvc02.Controllers
 {
     public class PunchCardController : BaseController
@@ -29,7 +30,7 @@ namespace practice_mvc02.Controllers
 
         public IActionResult Index(string page)
         {           
-            if( loginFn.isLoginInfo(loginID, loginGroupID) && ((ruleVal & ruleCode.punchAndLog) > 0)){
+            if( loginFn.isLoginInfo(loginID, loginGroupID) && ((ruleVal & ruleCode.baseActive) > 0)){
                 return selectPage(page);
             }else{
                 return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
@@ -44,6 +45,7 @@ namespace practice_mvc02.Controllers
             ViewBag.Operator = "myself";
             ViewBag.punchLogName = loginName;
             ViewBag.canEditPunchLog = false;
+            ViewBag.showNavBar = true;
             if(page == "log"){
                 return View("PunchCardLogPage");
             }
@@ -63,6 +65,7 @@ namespace practice_mvc02.Controllers
                 ViewBag.punchLogName = employeeName;
                 ViewBag.lookEmployeeDepartID = employeeDepartID;
                 ViewBag.ruleVal = ruleVal;
+                ViewBag.showNavBar = false;
                 ViewBag.canEditPunchLog = (ruleVal & ruleCode.editPunchLog)>0 ? true : false;
                 return View("PunchCardLogPage");
             }else{
@@ -118,7 +121,7 @@ namespace practice_mvc02.Controllers
             return punchCardFn.forcePunchLogProcess(newPunchLog, thisWorkTime, "add");
         }
 
-        public int forceUpdatePunchCardLog(PunchCardLog updatePunchLog){
+        public int forceUpdatePunchCardLog(PunchCardLog updatePunchLog, string from){
             if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.editPunchLog)==0){
                 return -2;
             }
@@ -127,7 +130,7 @@ namespace practice_mvc02.Controllers
             }
             updatePunchLog.accountID = Repository.GetThisLogAccID(updatePunchLog.ID);
             WorkTimeRule thisWorkTime = Repository.GetThisWorkTime(updatePunchLog.accountID);
-            return punchCardFn.forcePunchLogProcess(updatePunchLog, thisWorkTime, "update");
+            return punchCardFn.forcePunchLogProcess(updatePunchLog, thisWorkTime, "update", from);
         }
 
         public int delPunchCardLog(int punchLogID){

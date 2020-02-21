@@ -1,18 +1,35 @@
 ﻿
-.allAccount_table, .allDepartment_table, .punchLog_table, .allTimeRule_table, .allGroup_table{
+.allAccount_table, .allDepartment_table, .punchLog_table, 
+.allTimeRule_table, .allGroup_table, .specialDate_table{
   text-align:center;
   margin-left:auto; 
   margin-right:auto;
   font-size:30px;
+  word-break:break-all;
+}
+.punchLogWarn_table, .applyLeave_table{
+  text-align:center;
+  margin-left:auto; 
+  margin-right:auto;
+  font-size:24px;
+  word-break:break-all;
+}
+.applyLeave_table > tbody > tr > td{
+  padding: 12px 6px;
+  vertical-align: middle;
+}
+.container{
+  max-width: 1300px;
+}
+.btn{
+  margin: 3px;
 }
 
 #groupList td[name='groupAuthority']{
   text-align:left !important;
-  /*margin-left:auto; 
-  margin-right:auto;*/
 }
 
-.template, #timeRuleDiv, #groupRuleDiv{
+.template, .newRestType{
   display:none;
 }
 
@@ -43,6 +60,9 @@ tr[name='groupRow'] td, tr[name='addGroupRow'] td{
   vertical-align: middle;
 }
 
+select, input, ul[group='table']{
+  margin: 5px;
+}
 
 
 
