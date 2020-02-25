@@ -41,5 +41,7 @@ namespace practice_mvc02.Controllers
             this.ruleCode = new groupRuleCode();
         }
 
+        
+
     }
 }

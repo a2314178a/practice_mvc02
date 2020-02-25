@@ -33,25 +33,24 @@ namespace practice_mvc02
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<AccountRepository>();
-            //IServiceProvider provider = services.BuildServiceProvider();
-            //AccountRepository accountService = provider.GetRequiredService<AccountRepository>();
+
             services.AddMvc(config =>
             {
-                //config.Filters.Add(new AuthorizationFilter(accountService));
+                //config.Filters.Add(new AuthorizationFilter());
             });
-            services.AddTimedJob(); //Add TimedJob services
-            services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體中
             
+            services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體中
+            services.AddTimedJob(); //Add TimedJob services
             services.AddTransient<MasterRepository>();
             services.AddTransient<PunchCardRepository>();
             services.AddTransient<SetRuleRepository>();
             services.AddTransient<ApplySignRepository>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {       
-            app.UseTimedJob();  //使用TimedJob
+        {            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -65,6 +64,7 @@ namespace practice_mvc02
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
+            app.UseTimedJob();  //使用TimedJob
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

@@ -20,9 +20,11 @@ namespace practice_mvc02.Models
 
         public punchCardFunction(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
             this.Repository = repository;
-            this._session = httpContextAccessor.HttpContext.Session;
-            this.loginID = _session.GetInt32("loginID");
-            this.loginDepartmentID = _session.GetInt32("loginDepartmentID");
+            if(httpContextAccessor.HttpContext != null){
+                this._session = httpContextAccessor.HttpContext.Session;
+                this.loginID = _session.GetInt32("loginID");
+                this.loginDepartmentID = _session.GetInt32("loginDepartmentID");
+            }
             this.psCode = new punchStatusCode();
         }
 
@@ -56,6 +58,9 @@ namespace practice_mvc02.Models
                 }    
                 logData.punchStatus = workAllTime ? psCode.normal : statusCode;
                 resultCount = DateTime.Now > eWorkDt && action == 1 ? 4 : Repository.AddPunchCardLog(logData);
+                if(resultCount == 1 && logData.punchStatus > 1){    //一定要新增log成功 不然會沒logID
+                    Repository.AddPunchLogWarn(logData);
+                }
             }
             else   //今日有打過卡
             {
@@ -67,7 +72,7 @@ namespace practice_mvc02.Models
                     logData.lastOperaAccID = (int)loginID;
                     logData.updateTime = DateTime.Now;
                     logData.punchStatus = workAllTime ? psCode.normal : statusCode == 0 ? psCode.normal : statusCode;
-                    resultCount = Repository.UpdatePunchCard(logData);               
+                    resultCount = Repository.UpdatePunchCard(logData);
                 }
                 else if(action == 1)  //打上班卡
                 {  
@@ -76,6 +81,9 @@ namespace practice_mvc02.Models
                     }else{  //有打下班紀錄 (不然不會有logData)
                         resultCount = 4;
                     }
+                }
+                if(logData.punchStatus > 1){
+                    Repository.AddPunchLogWarn(logData);
                 }
             }
             return resultCount;
@@ -126,6 +134,9 @@ namespace practice_mvc02.Models
             }
             processLog.punchStatus = workAllTime ? psCode.normal : processLog.punchStatus;
             int result = action == "update"? Repository.UpdatePunchCard(processLog) : Repository.AddPunchCardLog(processLog);
+            if(result == 1 && processLog.punchStatus > 1){
+                Repository.AddPunchLogWarn(processLog);
+            }
             if(action == "update" && from == "applySign" && result==1){
                 Repository.updatePunchLogWarn(processLog.ID);
             }
@@ -181,8 +192,34 @@ namespace practice_mvc02.Models
             return obj.GetType().GetProperty(key).GetValue(obj);
         }
 
-        public void processPunchlogWarn(){
-            
+        public void processPunchlogWarn(PunchCardLog log, WorkTimeRule thisWorkTime){
+            object workTime = workTimeProcess(thisWorkTime, log);
+            var sWorkDt = getObjectValue("sWorkDt", workTime);
+            var eWorkDt = getObjectValue("eWorkDt", workTime);
+            var sPunchDT = getObjectValue("sPunchDT", workTime);
+            var ePunchDT = getObjectValue("ePunchDT", workTime);
+            var workAllTime = getObjectValue("workAllTime", workTime);
+            var statusCode = log.punchStatus;     //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 
+
+            if(DateTime.Now < ePunchDT){
+                return;
+            }
+            if(log.offlineTime.Year == 1){ 
+                statusCode = DateTime.Now >= ePunchDT ? (statusCode | psCode.hadLost) : statusCode; 
+            }else{ 
+                statusCode = log.offlineTime < eWorkDt ? (statusCode | psCode.earlyOut) :statusCode;
+            }
+            if(log.onlineTime.Year == 1){
+                statusCode = DateTime.Now >= eWorkDt ? (statusCode | psCode.hadLost) : statusCode; 
+            }else{
+                statusCode = log.onlineTime > sWorkDt ? (statusCode | psCode.lateIn) : statusCode; 
+            }
+            if(log.onlineTime.Year != 1 && log.offlineTime.Year != 1 && statusCode == 0){
+                statusCode = psCode.normal;
+            }
+            log.punchStatus = statusCode;
+            Repository.UpdatePunchCard(log);
+            Repository.AddPunchLogWarn(log);
         }
         
     }

@@ -121,6 +121,27 @@ namespace practice_mvc02.Repositories
             return result;
         }
 
+        public void AddPunchLogWarn(PunchCardLog log){
+            var principalID = (from a in _DbContext.departments 
+                                join b in _DbContext.punchcardlogs on a.ID equals b.departmentID
+                                where b.ID == log.ID
+                                select a.principalID).FirstOrDefault();
+            var warnLog = new PunchLogWarn();
+            warnLog.accountID = log.accountID;
+            warnLog.principalID = principalID;
+            warnLog.punchLogID = log.ID;
+            warnLog.warnStatus = 0;
+            warnLog.createTime = DateTime.Now;
+            var context = _DbContext.punchlogwarns.FirstOrDefault(b=>b.punchLogID == log.ID);
+            if(context == null){
+                _DbContext.punchlogwarns.Add(warnLog);
+                _DbContext.SaveChanges();
+            }
+        }
+
+
+
+
         public void updatePunchLogWarn(int punchLogID){
             var context = _DbContext.punchlogwarns.FirstOrDefault(b=>b.punchLogID == punchLogID);
             if(context != null){
@@ -133,7 +154,11 @@ namespace practice_mvc02.Repositories
 
 
         public List<PunchCardLog> GetAllPunchLogWithWarn(){
-            var query = _DbContext.punchcardlogs.Where(b=>b.punchStatus == 0 || b.offlineTime.Year == 1);
+            var dtNow = DateTime.Now;
+            var dtRange = dtNow.AddDays(-7);
+
+            var query = _DbContext.punchcardlogs.Where(b=>(b.punchStatus == 0 || b.offlineTime.Year == 1) && b.logDate > dtRange);
+                                                        
             return query.ToList();
         }
 

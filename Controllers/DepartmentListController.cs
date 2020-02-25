@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using practice_mvc02.filters;
 using practice_mvc02.Models;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Controllers
 {
+    [TypeFilter(typeof(ActionFilter))]
     public class DepartmentListController : BaseController
     {
         public MasterRepository Repository { get; }
@@ -52,25 +54,25 @@ namespace practice_mvc02.Controllers
         }
         
         public int createDepartment(Department newData){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
+            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
                 return -2;
-            }
+            }*/
             newData.lastOperaAccID = (int)loginID;
             newData.createTime = DateTime.Now;   
             return Repository.CreateDepartment(newData);
         }
 
         public int delDepartment(int departID){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
+            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
                 return -2;
-            }
+            }*/
             return Repository.DelDepartment(departID);
         }
 
         public int updateDepartment(Department updateDate){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
+            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
                 return -2;
-            }
+            }*/
             updateDate.lastOperaAccID = (int)loginID;
             updateDate.updateTime = DateTime.Now; 
             return Repository.UpdateDepartment(updateDate);

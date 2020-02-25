@@ -15,7 +15,7 @@
                 if(res==1062){
                     alert("已有相關資料，請勿重複");
                 }
-                else if(res==-2){
+                else if(res.Result == -2){
                     alert("逾時過久，請重新登入");
                     if(window.name == "subWindow"){
                         window.close();

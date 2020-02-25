@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Pomelo.AspNetCore.TimedJob;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
@@ -12,29 +13,25 @@ namespace practice_mvc02.Models
         public punchCardFunction punchCardFn {get;}
 
 
-        public RefreshPunchLogWarnJob(PunchCardRepository repository){
+        public RefreshPunchLogWarnJob(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
             this.Repository = repository;
+            this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
         }
 
 
         // Begin 起始時間；Interval執行時間間隔，單位是毫秒，建議使用以下格式，ex:3小時(1000 * 3600 * 3)；
         //SkipWhileExecuting是否等待上一個執行完成，true為等待；
         //[Invoke(Begin = "2016-11-29 22:10", Interval = 1000 * 3600*3, SkipWhileExecuting =true)]
-        [Invoke(Begin = "2020-02-21 08:00", Interval = 5000, SkipWhileExecuting =true)]
+        [Invoke(Begin = "2020-02-21 00:00", Interval = 1000*3600*24, SkipWhileExecuting =true, IsEnabled = false)]
         public void Run()
         {
-
             List<PunchCardLog> warnLog = new List<PunchCardLog>();
             warnLog = Repository.GetAllPunchLogWithWarn();
             
-            foreach (PunchCardLog log in warnLog)
-            {
-               
-
-
+            foreach (PunchCardLog log in warnLog){
+                WorkTimeRule thisWorkTime = Repository.GetThisWorkTime(log.accountID);
+                punchCardFn.processPunchlogWarn(log, thisWorkTime);
             }   
-
-
             Console.WriteLine(DateTime.Now);
         }
 
