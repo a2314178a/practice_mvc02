@@ -29,11 +29,8 @@ namespace practice_mvc02.Controllers
 
         public IActionResult Index()
         {           
-            if(loginFn.isLoginInfo(loginID, loginAccLV) && (ruleVal & ruleCode.departmentList) > 0){
-                return selectPage();
-            }else{
-                return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
-            }
+            return selectPage();
+            //return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
         }
 
         public IActionResult selectPage(){
@@ -54,25 +51,16 @@ namespace practice_mvc02.Controllers
         }
         
         public int createDepartment(Department newData){
-            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
-                return -2;
-            }*/
             newData.lastOperaAccID = (int)loginID;
             newData.createTime = DateTime.Now;   
             return Repository.CreateDepartment(newData);
         }
 
         public int delDepartment(int departID){
-            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
-                return -2;
-            }*/
             return Repository.DelDepartment(departID);
         }
 
         public int updateDepartment(Department updateDate){
-            /*if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
-                return -2;
-            }*/
             updateDate.lastOperaAccID = (int)loginID;
             updateDate.updateTime = DateTime.Now; 
             return Repository.UpdateDepartment(updateDate);

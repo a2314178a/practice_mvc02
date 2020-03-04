@@ -15,36 +15,35 @@ namespace practice_mvc02.Repositories
 
         #region employee CRUD
 
-        public object GetThisLvAllAcc(int? loginID, bool crossDepart, int loginAccLV){
+        public object GetThisLvAllAcc(int loginID, bool crossDepart, int loginAccLV, 
+                                        string fName, string fDepart, string fPosition){
             object result = null;
             
-            if(loginID == null){
-                return null;
-            }else{
-                string departName = "";
-                if(!crossDepart){
-                    var query01 = from a in _DbContext.departments
-                                join b in _DbContext.accounts on a.ID equals b.departmentID
-                                where b.ID == loginID select a.department;
-                    departName = query01.Count()>0? query01.ToList()[0] : "有問題但不能回傳跨部門結果";
-                }
-                var query = from a in _DbContext.accounts
-                            join b in _DbContext.departments on a.departmentID equals b.ID
-                            join c in _DbContext.worktimerules on a.timeRuleID equals c.ID into tmp
-                            from d in tmp.DefaultIfEmpty()
-                            where b.department.Contains(departName) && a.accLV <= loginAccLV 
-                            orderby b.department
-                            select new {
-                                a.ID, a.account, a.userName,
-                                b.department, b.position,  
-                                //d.startTime, d.endTime
-                            };
-                result = query.ToList();
+            string departName = fDepart;
+            if(!crossDepart){
+                var query01 = from a in _DbContext.departments
+                            join b in _DbContext.accounts on a.ID equals b.departmentID
+                            where b.ID == loginID select a.department;
+                departName = query01.Count()>0? query01.ToList()[0] : "有問題但不能回傳跨部門結果";
             }
+            var query = from a in _DbContext.accounts
+                        join b in _DbContext.departments on a.departmentID equals b.ID
+                        join c in _DbContext.worktimerules on a.timeRuleID equals c.ID into tmp
+                        from d in tmp.DefaultIfEmpty()
+                        where a.userName.Contains(fName) &&  b.department.Contains(departName) && 
+                                b.position.Contains(fPosition) && a.accLV <= loginAccLV 
+                        orderby b.department
+                        select new {
+                            a.ID, a.account, a.userName,
+                            b.department, b.position,  
+                            //d.startTime, d.endTime
+                        };
+            result = query.ToList();
+            
             return result;
         }
 
-        public int CreateEmployee(Account newEmployee){
+        public int CreateEmployee(Account newEmployee, EmployeeDetail newDetail){
             int count = 0;
             var context = _DbContext.accounts.FirstOrDefault(b=>b.account == newEmployee.account);
             if(context != null){
@@ -52,6 +51,14 @@ namespace practice_mvc02.Repositories
             }
             _DbContext.accounts.Add(newEmployee);
             count = _DbContext.SaveChanges();
+            if(newEmployee.ID > 0){
+                var context2 = _DbContext.employeedetails.FirstOrDefault(b=>b.accountID == newEmployee.ID);
+                if(context2 == null){
+                    newDetail.accountID = newEmployee.ID;
+                    _DbContext.employeedetails.Add(newDetail);
+                    _DbContext.SaveChanges();
+                }
+            }
             return count;
         }
 
@@ -65,7 +72,7 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-        public int UpdateEmployee(Account updateData){
+        public int UpdateEmployee(Account updateData, EmployeeDetail upDetail){
             int count = 0;
             var context = _DbContext.accounts.FirstOrDefault(b=>b.ID == updateData.ID);
             if(context != null){
@@ -81,6 +88,13 @@ namespace practice_mvc02.Repositories
                 context.updateTime = updateData.updateTime;
                 count = _DbContext.SaveChanges();
             }
+            var context2 = _DbContext.employeedetails.FirstOrDefault(b=>b.accountID == updateData.ID);
+            if(context2 != null){
+                context2.startWorkDate = upDetail.startWorkDate;
+                context2.lastOperaAccID = upDetail.lastOperaAccID;
+                context2.updateTime = upDetail.updateTime;
+                _DbContext.SaveChanges();
+            }
             return count;
         }
         
@@ -89,6 +103,17 @@ namespace practice_mvc02.Repositories
             return context;
         }
 
+        public object GetDepartOption(){
+            var query = _DbContext.departments.Select(b=>b.department).Distinct();
+            return query.ToList();
+        }
+
+        public object GetPositionOption(){
+            var query = _DbContext.departments.Select(b=>b.position).Distinct();
+            return query.ToList();
+        }
+        
+        
         #endregion  //employee CRUD
 
 

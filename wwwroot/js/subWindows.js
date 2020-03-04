@@ -84,6 +84,7 @@ function getAccountDetail(editID){
     var getAccInfoSuccessFn = function(accInfo){
         $("input[name='account']").val(accInfo.account);
         $("input[name='userName']").val(accInfo.userName);
+        $("input[name='startWorkDate']").val(((accInfo.startWorkDate).split("T"))[0]);
         $("select[name='department']").find("option[value='"+accInfo.department+"']").prop("selected", "selected");
         setAllPosition(accInfo.department);
         $("select[name='position']").find("option[value='"+ accInfo.departmentID +"']").prop("selected", true);
@@ -113,6 +114,9 @@ function createEmployee(){
         timeRuleID: $("select[name='timeRule']").val(),
         groupID: $("select[name='actAuthority']").val(),
     };
+    var data2 = {
+        startWorkDate: $("input[name='startWorkDate']").val(),
+    };
     var successFn = function(res){
         if(res== 1){
             window.close();
@@ -122,7 +126,7 @@ function createEmployee(){
             alert("該帳號已存在");
         }
     };
-    myObj.cudAjaxFn("/EmployeeList/createEmployee", data, successFn);
+    myObj.cudAjaxFn("/EmployeeList/createEmployee", {newEmployee:data, employeeDetail:data2}, successFn);
 }
 
 function updateEmployee(employeeID){
@@ -141,12 +145,15 @@ function updateEmployee(employeeID){
         timeRuleID: $("select[name='timeRule']").val(),
         groupID: $("select[name='actAuthority']").val(),
     };
+    var data2 = {
+        startWorkDate: $("input[name='startWorkDate']").val(),
+    };
     var successFn = function(res){
         if(res== 1){
             window.close();
         }
     };
-    myObj.cudAjaxFn("/EmployeeList/updateEmployee", data, successFn);
+    myObj.cudAjaxFn("/EmployeeList/updateEmployee", {updateData:data, employeeDetail:data2}, successFn);
 }
 
 

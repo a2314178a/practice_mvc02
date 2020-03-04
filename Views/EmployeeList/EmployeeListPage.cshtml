@@ -24,9 +24,33 @@
                             </select> *@
                             <span style="width:30px;"></span>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" name="employee" onclick="showEmployee();">員工</a>
+                                <a class="nav-link active" href="#" name="employee" onclick="showEmployee();">員工</a>
                             </li>
                         </ul>
+
+                        <div id="searchFilterDiv" style="text-align:center; margin:20px auto;">
+                            <p>
+                                <form>
+                                    <span style="margin:10px">
+                                        <span style="font-size:20px;">姓名:&nbsp;</span> 
+                                        <input type="text" id="filterName">
+                                    </span>   
+                                    <span style="margin:10px">
+                                        <span style="font-size:20px;">部門:&nbsp;</span>
+                                        <select id="filterDepart">
+                                            <option value="">請選擇</option>
+                                        </select>
+                                    </span>
+                                    <span style="margin:10px">
+                                        <span style="font-size:20px;">職位:&nbsp;</span>
+                                        <select id="filterPosition">
+                                            <option value="">請選擇</option>
+                                        </select>
+                                    </span>
+                                    <input type="button" name="searchFilterBtn" value="搜尋">
+                                </form>
+                            </p>   
+                        </div>
 
                         <div id="accountDiv">
                             <table class="table table-hover table-bordered allAccount_table">

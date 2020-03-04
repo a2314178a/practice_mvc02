@@ -42,9 +42,13 @@ namespace practice_mvc02.Repositories
 
        #region  LeaveOffice
 
-        public object GetMyApplyLeave(int loginID, int page){
+        public object GetMyApplyLeave(int loginID, int page, DateTime sDate, DateTime eDate){
+            var feDate = eDate.Year == 1? eDate.AddYears(9998) : eDate.AddDays(1);
             var selStatus = page == 0? 1 : 3;   //0: 待審 1:通過 2:不通過
-            var query = _DbContext.leaveofficeapplys.Where(b=>b.accountID == loginID && b.applyStatus < selStatus).Select(
+            var query = _DbContext.leaveofficeapplys.Where(
+                            b=>b.accountID == loginID && b.applyStatus < selStatus &&
+                            b.createTime >= sDate && b.createTime < feDate
+            ).Select(
                 b=> new{b.ID, b.applyType, b.note, b.startTime, b.endTime, b.applyStatus, b.createTime}
             );
             return query.ToList();

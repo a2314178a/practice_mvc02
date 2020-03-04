@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using practice_mvc02.filters;
 using practice_mvc02.Models;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Controllers
 {
+    [TypeFilter(typeof(ActionFilter))]
     public class ApplicationSignController : BaseController
     {
         public ApplySignRepository Repository { get; }
@@ -26,12 +28,8 @@ namespace practice_mvc02.Controllers
         }
 
         public IActionResult Index(int type=1)
-        {           
-            if(loginFn.isLoginInfo(loginID, loginAccLV) && (ruleVal & ruleCode.applySign) > 0){
-                return selectPage(type);
-            }else{
-                return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
-            }
+        {              
+            return selectPage(type);
         }
 
         public IActionResult selectPage(int type){
@@ -56,9 +54,6 @@ namespace practice_mvc02.Controllers
         }
 
         public int ignorePunchLogWarn(int punchLogID){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.applySign)==0){
-                return -2;
-            }
             return Repository.IgnorePunchLogWarn(punchLogID);
         }
 
@@ -73,9 +68,6 @@ namespace practice_mvc02.Controllers
         }
 
         public int isAgreeApplyLeave(int applyLeaveID, int isAgree){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.applySign)==0){
-                return -2;
-            }
             return Repository.IsAgreeApplyLeave(applyLeaveID, isAgree, (int)loginID);
         }
 

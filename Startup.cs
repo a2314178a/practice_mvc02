@@ -45,7 +45,7 @@ namespace practice_mvc02
             services.AddTransient<PunchCardRepository>();
             services.AddTransient<SetRuleRepository>();
             services.AddTransient<ApplySignRepository>();
-            
+            services.AddTransient<MessageRepository>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

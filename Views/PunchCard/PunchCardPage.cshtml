@@ -25,7 +25,10 @@
                                 <a class="nav-link active" href="#" onclick="showPunchCardPage();">打卡</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" onclick="showPunchLogPage();">打卡紀錄</a>
+                                <a class="nav-link" href="#" onclick="showPunchLogPage(@ViewBag.targetID);">打卡紀錄</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showTimeTotalPage(@ViewBag.targetID);">工作時數</a>
                             </li>
                         </ul>
 

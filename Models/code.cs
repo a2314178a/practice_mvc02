@@ -32,6 +32,7 @@ namespace practice_mvc02.Models
         public int lateIn {get;}
         public int earlyOut {get;}
         public int overtime {get;}
+        public int noWork {get;}
     
         public punchStatusCode(){
             this.normal = 0x0001;   //正常
@@ -39,6 +40,7 @@ namespace practice_mvc02.Models
             this.earlyOut = 0x0004; //早退
             this.overtime = 0x0008; //加班
             this.hadLost = 0x0010;  //缺卡
+            this.noWork = 0x0020;   //曠職
         } 
     }
 

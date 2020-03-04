@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using practice_mvc02.filters;
 using practice_mvc02.Models;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
@@ -15,6 +16,7 @@ using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Controllers
 {
+    [TypeFilter(typeof(ActionFilter))]
     public class PunchCardController : BaseController
     {
         public PunchCardRepository Repository { get; }
@@ -28,49 +30,55 @@ namespace practice_mvc02.Controllers
             this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
         }
 
-        public IActionResult Index(string page)
-        {           
-            if( loginFn.isLoginInfo(loginID, loginGroupID) && ((ruleVal & ruleCode.baseActive) > 0)){
-                return selectPage(page);
-            }else{
-                return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
+        public IActionResult Index(string page, int target=0)
+        {
+            if(target == 0){
+                target = (int)loginID;
             }
+            return selectPage(page, target);
         }
 
-        public IActionResult selectPage(string page){
+        public IActionResult selectPage(string page, int targetID){
+            if(targetID != loginID){
+                return getEmployeeLog(targetID, page);
+            }
             ViewBag.ruleVal = ruleVal;
             ViewData["loginName"] = loginName;
+            ViewBag.targetID = targetID;
             ViewBag.Auth = "Y";
             ViewBag.loginAccLV = loginAccLV;
             ViewBag.Operator = "myself";
             ViewBag.punchLogName = loginName;
             ViewBag.canEditPunchLog = false;
-            ViewBag.showNavBar = true;
+            ViewBag.showPunchBtn = true;
             if(page == "log"){
                 return View("PunchCardLogPage");
+            }else if(page == "total"){
+                return View("TimeTotalPage");
             }
             return View("PunchCardPage");
         }
 
-        public IActionResult getEmployeeLog(int employeeID){
-            if(loginFn.isLoginInfo(loginID, loginAccLV)){
-                object accDetail = Repository.GetAccountDetail(employeeID);
-                var employeeAccLV = accDetail.GetType().GetProperty("accLV").GetValue(accDetail);
-                var employeeName = accDetail.GetType().GetProperty("userName").GetValue(accDetail);
-                var employeeDepartID = accDetail.GetType().GetProperty("departmentID").GetValue(accDetail);
-                ViewData["loginName"] = loginName;
-                ViewBag.Auth = "Y";
-                ViewBag.loginAccLV = loginAccLV;
-                ViewBag.lookEmployeeID = employeeID;
-                ViewBag.punchLogName = employeeName;
-                ViewBag.lookEmployeeDepartID = employeeDepartID;
-                ViewBag.ruleVal = ruleVal;
-                ViewBag.showNavBar = false;
-                ViewBag.canEditPunchLog = (ruleVal & ruleCode.editPunchLog)>0 ? true : false;
+        public IActionResult getEmployeeLog(int targetID, string page){
+            
+            object accDetail = Repository.GetAccountDetail(targetID);
+            var employeeAccLV = accDetail.GetType().GetProperty("accLV").GetValue(accDetail);
+            var employeeName = accDetail.GetType().GetProperty("userName").GetValue(accDetail);
+            var employeeDepartID = accDetail.GetType().GetProperty("departmentID").GetValue(accDetail);
+            ViewData["loginName"] = loginName;
+            ViewBag.Auth = "Y";
+            ViewBag.loginAccLV = loginAccLV;
+            ViewBag.targetID = targetID;
+            ViewBag.punchLogName = employeeName;
+            ViewBag.lookEmployeeDepartID = employeeDepartID;
+            ViewBag.ruleVal = ruleVal;
+            ViewBag.showPunchBtn = targetID == (int)loginID? true : false;
+            ViewBag.canEditPunchLog = (ruleVal & ruleCode.editPunchLog)>0 ? true : false;
+            if(page=="log"){
                 return View("PunchCardLogPage");
-            }else{
-                return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
             }
+            return View("TimeTotalPage");
+            //return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
         }
 
         
@@ -91,9 +99,6 @@ namespace practice_mvc02.Controllers
         }
 
         public int addPunchCardLog(int action, int employeeID = 0){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp)){
-                return -2;
-            }
             if(employeeID == 0){
                 employeeID = (int)loginID;
             }
@@ -108,11 +113,14 @@ namespace practice_mvc02.Controllers
             return Repository.GetAllPunchLogByID(employeeID);
         }
 
+        public object getPunchLogByIDByDate(int employeeID, DateTime sDate, DateTime eDate){
+            if(employeeID == 0)
+                employeeID = (int)loginID;
+            return Repository.GetPunchLogByIDByDate(employeeID, sDate, eDate);
+        }
+
 
         public int forceAddPunchCardLog(PunchCardLog newPunchLog){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.editPunchLog)==0){
-                return -2;
-            }
             if( newPunchLog.accountID == 0 || newPunchLog.departmentID == 0 || 
                (newPunchLog.onlineTime.Year == 1 && newPunchLog.offlineTime.Year == 1) ){
                   return 2; //此打卡紀錄不合法
@@ -122,9 +130,6 @@ namespace practice_mvc02.Controllers
         }
 
         public int forceUpdatePunchCardLog(PunchCardLog updatePunchLog, string from){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.editPunchLog)==0){
-                return -2;
-            }
             if( updatePunchLog.ID == 0 || (updatePunchLog.onlineTime.Year == 1 && updatePunchLog.offlineTime.Year == 1) ){
                   return 2; //此打卡紀錄不合法
             }
@@ -134,13 +139,12 @@ namespace practice_mvc02.Controllers
         }
 
         public int delPunchCardLog(int punchLogID){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.editPunchLog)==0){
-                return -2;
-            }
             return Repository.DelPunchCardLog(punchLogID);
         }
 
-        
+        public object getTimeTotalByID(int targetID){
+            return Repository.GetTimeTotalByID(targetID);
+        }
 
 
         

@@ -3,6 +3,12 @@ var myObj = new MyObj();
 
 $(document).ready(function() {  
     showEmployee();
+    getFilterOption();
+
+    $("#searchFilterDiv").on("click", "[name='searchFilterBtn']", function(){
+        getAccountByFilter();
+    });
+
     $(window).bind('beforeunload',function(){
         if(myObj.subWin != null && myObj.subWin.open){
             myObj.subWin.close();
@@ -10,13 +16,36 @@ $(document).ready(function() {
     });
 });//.ready function
 
+function getFilterOption(){
+    var successFn = function(res){
+        res.department.forEach(function(value){
+            $("#filterDepart").append(new Option(value, value));
+        });
+        res.position.forEach(function(value){
+            $("#filterPosition").append(new Option(value, value));
+        });
+    };
+    myObj.rAjaxFn("get", "/EmployeeList/getFilterOption", null, successFn);
+}
 
+function showEmployee(){
+    $('.btnActive').css('pointer-events', "");
+    getAccountByFilter();
+}
 
-function getAllAccount(){
+function getAccountByFilter(){
+    var filterName = $("#filterName").val();
+    var filterDepart = $("#filterDepart").val();
+    var filterPosition = $("#filterPosition").val();
+    var data ={
+        fName: filterName,
+        fDepart: filterDepart,
+        fPosition: filterPosition
+    };
     var successFn = function(res){
         refreshAccList(res);
     };
-    myObj.getAccountList("get", "/EmployeeList/getThisLvAllAcc", successFn)
+    myObj.rAjaxFn("get", "/EmployeeList/getThisLvAllAcc", data, successFn);
 }
 
 function refreshAccList(res){
@@ -30,46 +59,37 @@ function refreshAccList(res){
         row.find("[name='position']").text(value.position);
         //var text = value.startTime + " ~ " + value.endTime;
         //row.find("[name='timeRule']").text(text);
-        row.find(".edit_user").attr("onclick","editEmployee(this,"+value.id+");");
+        row.find(".edit_user").attr("onclick","showAddAccWindow("+value.id+");");
         row.find(".del_user").attr("onclick","delEmployee("+value.id+");");
         $("#accountList").append(row);
-     });
+    });
 }
 
-function showEmployee(){
-    $("ul a[name='employee']").addClass("active");
-    $("ul a[name='department']").removeClass("active");
-    $('.btnActive').css('pointer-events', "");
-    getAllAccount();
-}
-
-
-function showAddAccWindow(){
-    $('.btnActive').css('pointer-events', "none");  
-    var closeFn = getAllAccount;
-    myObj.openSubWindow(500, 650, "/EmployeeList/showAddForm", closeFn);
-}
 function delEmployee(employeeID){
     var msg = "您真的確定要刪除嗎？\n\n請確認！";
     if(confirm(msg)==false) 
         return;
     var successFn = function(res){
         if(res > 0){
-            getAllAccount();
+            showEmployee();
         }else{
             alert('fail');
         }     
     };
     myObj.cudAjaxFn("/EmployeeList/delEmployee", {employeeID: employeeID}, successFn);
 }
-function editEmployee(thisBtn, employeeID){
-    $('.btnActive').css('pointer-events', "none");  
-    var closeFn = getAllAccount;
-    myObj.openSubWindow(500, 650, "/EmployeeList/showAddForm?ID=" + employeeID, closeFn);
-}
-
 
 function showThisPunchLog(employeeID){
-    window.location.href = "/PunchCard/getEmployeeLog?employeeID="+employeeID;
+    window.location.href = "/PunchCard/Index?page=log&target="+employeeID;
 }
 
+function showAddAccWindow(employeeID=0){
+    var successFn = function(res){
+        if(res == 1){
+            $('.btnActive').css('pointer-events', "none");  
+            var closeFn = showEmployee;         
+            myObj.openSubWindow(550, 800, "/EmployeeList/showAddForm?ID=" + employeeID, closeFn);
+        }
+    };
+    myObj.rAjaxFn("get", "/EmployeeList/chkLoginStatus", null, successFn);
+}

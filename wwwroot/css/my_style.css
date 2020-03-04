@@ -1,13 +1,14 @@
 ﻿
 .allAccount_table, .allDepartment_table, .punchLog_table, 
-.allTimeRule_table, .allGroup_table, .specialDate_table{
+.allTimeRule_table, .allGroup_table, .specialDate_table,
+.timeTotal_table{
   text-align:center;
   margin-left:auto; 
   margin-right:auto;
   font-size:30px;
   word-break:break-all;
 }
-.punchLogWarn_table, .applyLeave_table{
+.punchLogWarn_table, .applyLeave_table, .message_table{
   text-align:center;
   margin-left:auto; 
   margin-right:auto;
@@ -16,7 +17,9 @@
 }
 .applyLeave_table > tbody > tr > td{
   padding: 12px 6px;
-  vertical-align: middle;
+}
+td{
+  vertical-align: middle !important;
 }
 .container{
   max-width: 1300px;
@@ -56,15 +59,39 @@ input[name='punchOption']{
   zoom: 125%;
 }
 
-tr[name='groupRow'] td, tr[name='addGroupRow'] td{
+/*tr[name='groupRow'] td, tr[name='addGroupRow'] td{
   vertical-align: middle;
-}
+}*/
 
 select, input, ul[group='table']{
   margin: 5px;
 }
 
+#writeMsgDiv{
+  text-align: center;
+}
 
+.writeMsg_table{
+  text-align:center;
+  margin-left:auto; 
+  margin-right:auto;
+  font-size:24px;
+  word-break:break-all;
+  max-width: 700px;
+}
 
+.writeMsg_table .msgTitle{
+  padding: 6px ;
+  width: 100px !important;
+}
 
+.writeMsg_table #msgTitle{
+  width: 550px;
+  height: 50px;
+}
+
+.writeMsg_table #content{
+  width: 550px;
+  height: 500px;
+}
 

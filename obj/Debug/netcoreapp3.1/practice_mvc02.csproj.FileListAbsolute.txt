@@ -201,3 +201,5 @@ c:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Home\Welcome.
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplyLeave\ApplyLeavePage.cshtml.g.cs
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSign\ManagerSignPage.cshtml.g.cs
 C:\work_project\practice_mvc02\bin\Debug\netcoreapp3.1\Pomelo.AspNetCore.TimedJob.dll
+c:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Message\MessagePage.cshtml.g.cs
+C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\PunchCard\TimeTotalPage.cshtml.g.cs

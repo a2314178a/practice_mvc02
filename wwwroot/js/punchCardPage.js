@@ -19,8 +19,11 @@ $(document).ready(function() {
 function showPunchCardPage(){
     window.location.href = "/PunchCard/";
 }
-function showPunchLogPage(){
-    window.location.href = "/PunchCard/Index?page=log";
+function showPunchLogPage(targetID){
+    window.location.href = "/PunchCard/Index?page=log&target="+targetID;
+}
+function showTimeTotalPage(targetID){
+    window.location.href = "/PunchCard/Index?page=total&target="+targetID;
 }
 
 
@@ -82,7 +85,7 @@ function chkPunchOptionStatus(){
 
 function punchCardFn(){
     var optionVal = $('input[name=punchOption]:checked').val();
-    if(isNaN(optionVal || (optionVal == 1 && myObj.onlineStatus))){
+    if(isNaN(optionVal) || (optionVal == 1 && myObj.onlineStatus)){
         alert("請點選打卡選項");
         return;
     }
@@ -91,7 +94,7 @@ function punchCardFn(){
         switch(res){
             case 1: getTodayPunchStatus(); break;
             case 2: alert("上班已打卡"); break;
-            case 3: break;
+            case 3: alert("現在時段不能打下班卡"); break;
             case 4: alert("不能補打上班時間"); break;
         }
     }

@@ -38,6 +38,7 @@ function getPunchLogWarn(){
             status = (value.punchStatus & 0x04) ? status+="早退/" : status;
             status = (value.punchStatus & 0x08) ? status+="加班/" : status;
             status = (value.punchStatus & 0x10) ? status+="缺卡/" : status;
+            status = (value.punchStatus & 0x20) ? "曠職" : status;
             status = (value.punchStatus & 0x01) && status == "" ? status+="正常" : status;
             status = status.charAt(status.length-1) == "/" ? status.substring(0, status.length -1) :status; 
 

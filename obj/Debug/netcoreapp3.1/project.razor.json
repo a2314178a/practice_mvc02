@@ -20581,6 +20581,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\PunchCard\\TimeTotalPage.cshtml",
+      "TargetPath": "Views\\PunchCard\\TimeTotalPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\Shared\\_Layout.cshtml",
       "TargetPath": "Views\\Shared\\_Layout.cshtml",
       "FileKind": "mvc"
@@ -20588,6 +20593,11 @@
     {
       "FilePath": "c:\\work_project\\practice_mvc02\\Views\\PunchCard\\PunchCardPage.cshtml",
       "TargetPath": "Views\\PunchCard\\PunchCardPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\practice_mvc02\\Views\\Message\\MessagePage.cshtml",
+      "TargetPath": "Views\\Message\\MessagePage.cshtml",
       "FileKind": "mvc"
     }
   ],

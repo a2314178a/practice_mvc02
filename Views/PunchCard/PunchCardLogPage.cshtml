@@ -12,27 +12,41 @@
         <link rel="stylesheet" href="~/css/my_style.css">
 	</head>
 
-	<body onload="getAllPunchLogByID(@ViewBag.lookEmployeeID);">			
+	<body onload="getAllPunchLogByID(@ViewBag.targetID);">			
         <div class="container"><!--內容-->
             <div class="row mx-0 align-items-center justify-content-center w-100">
                 <div class="col-12">
                     <div id="PunchCardLogPage" style="text-align:center;">
-                        
-                        @if(ViewBag.showNavBar)
-                        {
+                            
                         <ul class="nav nav-tabs justify-content-end" group="table">                         
                             <span style="width:30px;"></span>
+                            @if(ViewBag.showPunchBtn)
+                            {
                             <li class="nav-item">
                                 <a class="nav-link" href="#" onclick="showPunchCardPage();">打卡</a>
                             </li>
+                            }
                             <li class="nav-item">
-                                <a class="nav-link active" href="#" onclick="showPunchLogPage();">打卡紀錄</a>
+                                <a class="nav-link active" href="#" onclick="showPunchLogPage(@ViewBag.targetID);">打卡紀錄</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showTimeTotalPage(@ViewBag.targetID);">工作時數</a>
                             </li>
                         </ul>
-                        }
-
+                        
                         <div id="punchLogDiv">
                             <div style="margin:10px;"><h3>@ViewBag.punchLogName 的打卡紀錄</h3></div>
+
+                            <div id="searchFilterDiv" style="text-align:center; margin:20px auto;">
+                                <p>
+                                    <form>
+                                        起始 Date: <input type="date" id="filter_sDate">&nbsp;&nbsp;&nbsp;&nbsp;
+                                        結束 Date: <input type="date" id="filter_eDate">
+                                        <input type="button" name="searchFilterBtn" value="搜尋">
+                                    </form>
+                                </p>   
+                            </div>
+
                             <table class="table table-hover table-bordered punchLog_table">
                                 <thead class="thead-dark" >
                                     <tr>
@@ -51,7 +65,7 @@
                             </table>
                             @if(ViewBag.canEditPunchLog)
                             {
-                            <a href="javascript:void(0);" class="btn btn-primary btnActive add_punchLog" style="float:right" onclick="showAddPunchLogRow(@ViewBag.lookEmployeeID, @ViewBag.lookEmployeeDepartID);">新增紀錄</a>
+                            <a href="javascript:void(0);" class="btn btn-primary btnActive add_punchLog" style="float:right" onclick="showAddPunchLogRow(@ViewBag.targetID, @ViewBag.lookEmployeeDepartID);">新增紀錄</a>
                             }
                         </div> 
 

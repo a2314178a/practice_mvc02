@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MySql.Data.MySqlClient;
 using practice_mvc02.Models.dataTable;
 
 namespace practice_mvc02.Repositories
@@ -26,11 +27,11 @@ namespace practice_mvc02.Repositories
                 sDateTime = sDateTime.AddHours(lessStHour);
                 eDateTime = eDateTime.AddHours(addEtHour);
                 if(DateTime.Now >= eDateTime){
-                    sDateTime.AddDays(1);
-                    eDateTime.AddDays(1);
+                    sDateTime = sDateTime.AddDays(1);
+                    eDateTime = eDateTime.AddDays(1);
                 }else if(DateTime.Now < sDateTime){
-                    sDateTime.AddDays(-1);
-                    eDateTime.AddDays(-1);
+                    sDateTime = sDateTime.AddDays(-1);
+                    eDateTime = eDateTime.AddDays(-1);
                 }
             }else{
                 eDateTime = eDateTime.AddDays(1);
@@ -39,7 +40,10 @@ namespace practice_mvc02.Repositories
             var query = from a in _DbContext.punchcardlogs
                         where a.accountID == employeeID && 
                         (a.onlineTime < eDateTime && a.onlineTime >= sDateTime ||
-                        a.offlineTime <= eDateTime && a.offlineTime > sDateTime)
+                         a.offlineTime <= eDateTime && a.offlineTime > sDateTime ||
+                         (a.logDate.Date == (sDateTime.AddHours((lessStHour*-1))).Date && 
+                          a.onlineTime.Year == 1 && a.offlineTime.Year == 1)
+                        )
                         select a;
 
             if(query.Count() > 0){
@@ -51,6 +55,16 @@ namespace practice_mvc02.Repositories
         public object GetAllPunchLogByID(int employeeID){
             var query = from a in _DbContext.punchcardlogs
                         where a.accountID == employeeID
+                        orderby a.logDate descending
+                        select new{
+                            a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus
+                        };
+            return query.ToList();
+        }
+
+        public object GetPunchLogByIDByDate(int employeeID, DateTime sDate, DateTime eDate){
+            var query = from a in _DbContext.punchcardlogs
+                        where a.accountID == employeeID && a.logDate >= sDate && a.logDate <= eDate
                         orderby a.logDate
                         select new{
                             a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus
@@ -121,28 +135,39 @@ namespace practice_mvc02.Repositories
             return result;
         }
 
-        public void AddPunchLogWarn(PunchCardLog log){
-            var principalID = (from a in _DbContext.departments 
+        public void AddPunchLogWarnAndMessage(PunchCardLog log){
+            var query = (from a in _DbContext.departments 
                                 join b in _DbContext.punchcardlogs on a.ID equals b.departmentID
+                                join c in _DbContext.accounts on b.accountID equals c.ID
                                 where b.ID == log.ID
-                                select a.principalID).FirstOrDefault();
+                                select new{a.principalID, c.userName}).FirstOrDefault();
+
             var warnLog = new PunchLogWarn();
             warnLog.accountID = log.accountID;
-            warnLog.principalID = principalID;
+            warnLog.principalID = query.principalID;
             warnLog.punchLogID = log.ID;
             warnLog.warnStatus = 0;
             warnLog.createTime = DateTime.Now;
             var context = _DbContext.punchlogwarns.FirstOrDefault(b=>b.punchLogID == log.ID);
             if(context == null){
                 _DbContext.punchlogwarns.Add(warnLog);
-                _DbContext.SaveChanges();
+                if(_DbContext.SaveChanges() > 0){
+                    var title = "系統通知";
+                    var content = query.userName + "打卡異常，如有需要請前往處理，謝謝";
+                    var msg = new Message{title=title, content=content, createTime=DateTime.Now};
+                    _DbContext.message.Add(msg);
+                    _DbContext.SaveChanges();
+                    var msgID = msg.ID;
+                    if(msgID > 0){
+                        var record = new MsgSendReceive{messageID=msgID, receiveID=query.principalID, createTime=DateTime.Now};
+                        _DbContext.msgsendreceive.Add(record);
+                        _DbContext.SaveChanges();
+                    }
+                }
             }
         }
 
-
-
-
-        public void updatePunchLogWarn(int punchLogID){
+        public void UpdatePunchLogWarn(int punchLogID){
             var context = _DbContext.punchlogwarns.FirstOrDefault(b=>b.punchLogID == punchLogID);
             if(context != null){
                 context.warnStatus = 1;
@@ -151,14 +176,67 @@ namespace practice_mvc02.Repositories
             }
         }
 
+        //-------------------------------------------------------------------------------------
 
+        public SpecialDate GetThisSpecialDate(DateTime targetDay){
+            var query = _DbContext.specialdate.FirstOrDefault(b=>b.date == targetDay);
+            return query;
+        }
+
+        public List<Account> GetNeedPunchAcc(){
+            var query = _DbContext.accounts.Where(b=>b.timeRuleID > 0);
+            return query.ToList();
+        }
+
+        public PunchCardLog GetWorkDatePunchLog(int accID, DateTime targetDate){
+            var query = _DbContext.punchcardlogs.FirstOrDefault(b=>b.accountID == accID && b.logDate == targetDate);
+            return query;
+        }
+
+        public void AddNullPunchLog(int accID, int departID, DateTime targetDate){
+            var count = 0;
+            var nullPunchLog = new PunchCardLog();
+            nullPunchLog.accountID = accID;
+            nullPunchLog.departmentID = departID;
+            nullPunchLog.logDate = targetDate;
+            nullPunchLog.punchStatus = 0;
+            nullPunchLog.createTime = DateTime.Now;
+            try{
+                _DbContext.punchcardlogs.Add(nullPunchLog);
+                _DbContext.SaveChanges();
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+        }
 
         public List<PunchCardLog> GetAllPunchLogWithWarn(){
             var dtNow = DateTime.Now;
             var dtRange = dtNow.AddDays(-7);
+            var query = _DbContext.punchcardlogs.Where(b=>(b.punchStatus == 0 || b.offlineTime.Year == 1) && b.logDate > dtRange);                                           
+            return query.ToList();
+        }
 
-            var query = _DbContext.punchcardlogs.Where(b=>(b.punchStatus == 0 || b.offlineTime.Year == 1) && b.logDate > dtRange);
-                                                        
+        public List<PunchCardLog> GetPunchLogByDateByID(int targetID, DateTime sDT, DateTime eDT){
+            var query = _DbContext.punchcardlogs.Where(b=>b.accountID == targetID && 
+                                                        b.logDate >=sDT && b.logDate <= eDT);
+            return query.ToList();
+        }
+
+        public void SaveTotalTimeRecord(workTimeTotal data){
+            var context = _DbContext.worktimetotals.FirstOrDefault(
+                            b=>b.accountID == data.accountID && b.dateMonth == data.dateMonth);
+            if(context == null){
+                _DbContext.worktimetotals.Add(data);
+                _DbContext.SaveChanges();
+            }else{
+                context.totalTime = data.totalTime;
+                context.updateTime = DateTime.Now;
+                _DbContext.SaveChanges();
+            }
+        }
+
+        public object GetTimeTotalByID(int targetID){
+            var query = _DbContext.worktimetotals.Where(b=>b.accountID == targetID).OrderByDescending(b=>b.dateMonth);
             return query.ToList();
         }
 

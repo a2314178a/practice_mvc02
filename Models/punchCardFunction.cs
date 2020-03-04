@@ -36,9 +36,9 @@ namespace practice_mvc02.Models
             var eWorkDt = getObjectValue("eWorkDt", workTime);
             var sPunchDT = getObjectValue("sPunchDT", workTime);
             var workAllTime = getObjectValue("workAllTime", workTime);
-            int resultCount = 0; //0:操作異常 1:成功 2:上班已打卡 3:      4:不能補打上班時間
+            int resultCount = 0; //0:操作異常 1:成功 2:上班已打卡 3:現在時段不能打下班卡 4:不能補打上班時間
             var statusCode = 0;
-            if(logData == null) //今日皆未打卡      //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 
+            if(logData == null) //今日皆未打卡      //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 0x20:曠職
             {
                 logData = new PunchCardLog();
                 logData.accountID = employeeID;
@@ -47,6 +47,9 @@ namespace practice_mvc02.Models
                 logData.lastOperaAccID = (int)loginID;
                 logData.createTime = DateTime.Now;
                 if(action == 0){    //下班
+                    if(DateTime.Now >= sPunchDT && DateTime.Now <= sWorkDt){
+                        return 3;
+                    }
                     logData.offlineTime = DateTime.Now;
                     statusCode = statusCode | psCode.hadLost;
                     statusCode = DateTime.Now < eWorkDt ? (statusCode | psCode.earlyOut) : statusCode;
@@ -59,31 +62,46 @@ namespace practice_mvc02.Models
                 logData.punchStatus = workAllTime ? psCode.normal : statusCode;
                 resultCount = DateTime.Now > eWorkDt && action == 1 ? 4 : Repository.AddPunchCardLog(logData);
                 if(resultCount == 1 && logData.punchStatus > 1){    //一定要新增log成功 不然會沒logID
-                    Repository.AddPunchLogWarn(logData);
+                    Repository.AddPunchLogWarnAndMessage(logData);
                 }
             }
-            else   //今日有打過卡
+            else   //今日有打過卡 or 電腦生成(跨日才有可能遇到)
             {
                 if(action == 0) //打下班卡
                 {   
-                    statusCode = logData.punchStatus;
-                    logData.offlineTime = DateTime.Now;
-                    statusCode = DateTime.Now < eWorkDt ? (statusCode | psCode.earlyOut) : statusCode;  
-                    logData.lastOperaAccID = (int)loginID;
-                    logData.updateTime = DateTime.Now;
-                    logData.punchStatus = workAllTime ? psCode.normal : statusCode == 0 ? psCode.normal : statusCode;
-                    resultCount = Repository.UpdatePunchCard(logData);
+                    if(DateTime.Now >= sPunchDT && DateTime.Now <= sWorkDt && logData.onlineTime.Year == 1){
+                        resultCount = 3;
+                    }else{
+                        statusCode = logData.punchStatus;
+                        logData.offlineTime = DateTime.Now;
+                        statusCode = logData.onlineTime.Year == 1? (statusCode | psCode.hadLost) : statusCode;
+                        statusCode = DateTime.Now < eWorkDt ? (statusCode | psCode.earlyOut) : statusCode;  
+                        logData.lastOperaAccID = (int)loginID;
+                        logData.updateTime = DateTime.Now;
+                        logData.punchStatus = workAllTime || statusCode ==0 ? psCode.normal : statusCode;
+                        resultCount = Repository.UpdatePunchCard(logData);
+                    }
                 }
                 else if(action == 1)  //打上班卡
                 {  
                     if(logData.onlineTime.Year != 1){    //已打上班卡
                         resultCount = 2;
-                    }else{  //有打下班紀錄 (不然不會有logData)
-                        resultCount = 4;
+                    }else{  
+                        statusCode = logData.punchStatus;
+                        if(DateTime.Now >= eWorkDt || logData.offlineTime.Year !=1){
+                            resultCount = 4;
+                        }else{
+                            logData.onlineTime = DateTime.Now;
+                            statusCode = DateTime.Now > sWorkDt? (statusCode | psCode.lateIn) : statusCode;
+                            logData.lastOperaAccID = (int)loginID;
+                            logData.updateTime = DateTime.Now;
+                            logData.punchStatus = workAllTime ? psCode.normal : statusCode;
+                            resultCount = Repository.UpdatePunchCard(logData);
+                        }
                     }
                 }
                 if(logData.punchStatus > 1){
-                    Repository.AddPunchLogWarn(logData);
+                    Repository.AddPunchLogWarnAndMessage(logData);
                 }
             }
             return resultCount;
@@ -96,7 +114,7 @@ namespace practice_mvc02.Models
             var sPunchDT = getObjectValue("sPunchDT", workTime);
             var ePunchDT = getObjectValue("ePunchDT", workTime);
             var workAllTime = getObjectValue("workAllTime", workTime);
-            var statusCode = 0;     //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 
+            var statusCode = 0;     //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 0x20:曠職 
             processLog.lastOperaAccID = (int)loginID;
             if(action == "update"){
                 processLog.updateTime = DateTime.Now;
@@ -125,9 +143,11 @@ namespace practice_mvc02.Models
                     if(processLog.onlineTime < sPunchDT){
                         processLog.onlineTime = processLog.onlineTime.AddDays(1);
                     }
-                }else{  //填下班
+                }else if(processLog.offlineTime.Year !=1){  //填下班
                     statusCode |= psCode.hadLost;
                     statusCode = processLog.offlineTime < eWorkDt ? (statusCode | psCode.earlyOut) : statusCode;
+                }else{
+                    statusCode = psCode.noWork;
                 }
                 processLog.punchStatus = statusCode;
                 processLog.logDate = sWorkDt.Date;            
@@ -135,10 +155,10 @@ namespace practice_mvc02.Models
             processLog.punchStatus = workAllTime ? psCode.normal : processLog.punchStatus;
             int result = action == "update"? Repository.UpdatePunchCard(processLog) : Repository.AddPunchCardLog(processLog);
             if(result == 1 && processLog.punchStatus > 1){
-                Repository.AddPunchLogWarn(processLog);
+                Repository.AddPunchLogWarnAndMessage(processLog);
             }
             if(action == "update" && from == "applySign" && result==1){
-                Repository.updatePunchLogWarn(processLog.ID);
+                Repository.UpdatePunchLogWarn(processLog.ID);
             }
             return result;
         }
@@ -153,6 +173,8 @@ namespace practice_mvc02.Models
                     sWorkDt = eWorkDt = sPunchDT = ePunchDT = customLog.onlineTime.Date;
                 }else if(customLog.offlineTime.Year !=1){
                     sWorkDt = eWorkDt = sPunchDT = ePunchDT = customLog.offlineTime.Date;
+                }else if(customLog.logDate.Year !=1){
+                    sWorkDt = eWorkDt = sPunchDT = ePunchDT = customLog.logDate.Date;
                 }
             }
             bool workAllTime = false;                                
@@ -199,27 +221,31 @@ namespace practice_mvc02.Models
             var sPunchDT = getObjectValue("sPunchDT", workTime);
             var ePunchDT = getObjectValue("ePunchDT", workTime);
             var workAllTime = getObjectValue("workAllTime", workTime);
-            var statusCode = log.punchStatus;     //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 
+            var statusCode = log.punchStatus;     //statusCode:  0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 0x20:曠職
 
             if(DateTime.Now < ePunchDT){
                 return;
             }
-            if(log.offlineTime.Year == 1){ 
-                statusCode = DateTime.Now >= ePunchDT ? (statusCode | psCode.hadLost) : statusCode; 
-            }else{ 
-                statusCode = log.offlineTime < eWorkDt ? (statusCode | psCode.earlyOut) :statusCode;
-            }
-            if(log.onlineTime.Year == 1){
-                statusCode = DateTime.Now >= eWorkDt ? (statusCode | psCode.hadLost) : statusCode; 
+            if(log.onlineTime.Year == 1 && log.offlineTime.Year == 1){
+                statusCode = psCode.noWork;
             }else{
-                statusCode = log.onlineTime > sWorkDt ? (statusCode | psCode.lateIn) : statusCode; 
-            }
-            if(log.onlineTime.Year != 1 && log.offlineTime.Year != 1 && statusCode == 0){
-                statusCode = psCode.normal;
+                if(log.offlineTime.Year == 1){ 
+                statusCode = DateTime.Now >= ePunchDT ? (statusCode | psCode.hadLost) : statusCode; 
+                }else{ 
+                    statusCode = log.offlineTime < eWorkDt ? (statusCode | psCode.earlyOut) :statusCode;
+                }
+                if(log.onlineTime.Year == 1){
+                    statusCode = DateTime.Now >= eWorkDt ? (statusCode | psCode.hadLost) : statusCode; 
+                }else{
+                    statusCode = log.onlineTime > sWorkDt ? (statusCode | psCode.lateIn) : statusCode; 
+                }
+                if(log.onlineTime.Year != 1 && log.offlineTime.Year != 1 && statusCode == 0){
+                    statusCode = psCode.normal;
+                }
             }
             log.punchStatus = statusCode;
             Repository.UpdatePunchCard(log);
-            Repository.AddPunchLogWarn(log);
+            Repository.AddPunchLogWarnAndMessage(log);
         }
         
     }

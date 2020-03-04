@@ -3,16 +3,21 @@ var myObj = new MyObj();
 
 $(document).ready(function() {  
 
+    $("#searchFilterDiv").on("click", "[name='searchFilterBtn']", function(){
+        getPunchLogByIDByDate();
+    });
 
 });//.ready function
 
 function showPunchCardPage(){
     window.location.href = "/PunchCard/Index";
 }
-function showPunchLogPage(){
-    window.location.href = "/PunchCard/Index?page=log";
+function showPunchLogPage(targetID){
+    window.location.href = "/PunchCard/Index?page=log&target="+targetID;
 }
-
+function showTimeTotalPage(targetID){
+    window.location.href = "/PunchCard/Index?page=total&target="+targetID;
+}
 
 function getAllPunchLogByID(employeeID=0){
     myObj.lookEmployeeID = employeeID;
@@ -20,6 +25,26 @@ function getAllPunchLogByID(employeeID=0){
         refreshPunchLogList(res);
     };
     myObj.rAjaxFn("post", "/PunchCard/getAllPunchLogByID", {employeeID: employeeID}, successFn);
+}
+
+function getPunchLogByIDByDate(){
+    var sDate = $("#filter_sDate").val();
+    var eDate = $("#filter_eDate").val();
+    if(sDate == "" && eDate == ""){
+        getAllPunchLogByID(myObj.lookEmployeeID);  return;
+    }
+    else if(sDate == "" || eDate == "" || sDate > eDate){
+        alert("搜尋日期格式有誤");  return;
+    }
+    var data = {
+        employeeID : myObj.lookEmployeeID,
+        sDate : sDate,
+        eDate : eDate
+    };
+    var successFn = function(res){
+        refreshPunchLogList(res);
+    };
+    myObj.rAjaxFn("post", "/PunchCard/getPunchLogByIDByDate", data, successFn);
 }
 
 function refreshPunchLogList(res){
@@ -38,6 +63,7 @@ function refreshPunchLogList(res){
         status = (value.punchStatus & 0x04) ? status+="早退/" : status;
         status = (value.punchStatus & 0x08) ? status+="加班/" : status;
         status = (value.punchStatus & 0x10) ? status+="缺卡/" : status;
+        status = (value.punchStatus & 0x20) ? "曠職" : status;
         status = (value.punchStatus & 0x01) && status == "" ? status+="正常" : status;
         status = status.charAt(status.length-1) == "/" ? status.substring(0, status.length -1) :status;
         
@@ -61,11 +87,11 @@ function showAddPunchLogRow(employeeID, employeeDepartID){
     $('#punchLogList').append(addPunchLogRow);
 }
 
-
 function cancelPunchLog(employeeID){
     $('.btnActive').css('pointer-events', ""); 
     $("#punchLogDiv").find("a.add_punchLog").show();
-    getAllPunchLogByID(employeeID);
+    //getAllPunchLogByID(employeeID);
+    getPunchLogByIDByDate();
 }
 
 function createPunchLog(thisBtn, employeeID, employeeDepartID){
@@ -94,7 +120,6 @@ function createPunchLog(thisBtn, employeeID, employeeDepartID){
     }
     myObj.cudAjaxFn("/PunchCard/forceAddPunchCardLog", newPunchLog, successFn);
 }
-
 
 function editPunchLog(thisBtn, logID){
     $('.btnActive').css('pointer-events', "none");
@@ -142,7 +167,6 @@ function updatePunchLog(thisBtn, punchLogID){
     myObj.cudAjaxFn("/PunchCard/forceUpdatePunchCardLog", updatePunchLog, successFn);
 }
 
-
 function delPunchLog(logID){
     var msg = "您真的確定要刪除嗎？\n\n請確認！";
     if(confirm(msg)==false) 
@@ -157,9 +181,26 @@ function delPunchLog(logID){
     myObj.cudAjaxFn("/PunchCard/delPunchCardLog",{punchLogID: logID},successFn);
 }
 
+//--------------------------------------------------------------------------------------------------------
 
+function getTimeTotalByID(targetID){
+    var successFn = function(res){
+        refreshTimeTotalList(res);
+    };
+    myObj.rAjaxFn("post", "/PunchCard/getTimeTotalByID", {targetID:targetID}, successFn);
+}
 
-
+function refreshTimeTotalList(res){
+    $("#timeTotalList").empty();
+    res.forEach(function(value){
+        var row = $(".template").find("[name='timeTotalRow']").clone();
+        var dt = myObj.dateTimeFormat(value.dateMonth);
+        var dateText = dt.year + "-" + dt.month;
+        row.find("[name='logDate']").text(dateText);
+        row.find("[name='timeTotal']").text(value.totalTime);
+        $("#timeTotalList").append(row);
+    });
+}
 
 
 

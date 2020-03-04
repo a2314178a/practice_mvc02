@@ -97,8 +97,6 @@ namespace practice_mvc02.Controllers
         }
 
 
-
-
         public dynamic getObjectValue(string key, object obj){
             return obj.GetType().GetProperty(key).GetValue(obj);
         }

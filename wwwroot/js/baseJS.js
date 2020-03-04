@@ -11,28 +11,32 @@
             type : "post",
             url : url,     
             data: data,       
-            success:function(res){
+            success:function(res){         
                 if(res==1062){
                     alert("已有相關資料，請勿重複");
-                }
-                else if(res.Result == -2){
-                    alert("逾時過久，請重新登入");
-                    if(window.name == "subWindow"){
-                        window.close();
-                        window.opener.location.href = "/Home/logOut";
-                    }else{
-                        window.location.href = "/Home/logOut";
-                    }
                 }else if(res==-1){
                     alert("該帳號已存在");
-                }
-                else if(res==0){
+                }else if(res==0){
                     alert("操作失敗");
                 }else{
                     successFn(res);
                 }        
             },
-            error:function(){alert("error");}
+            error:function(res){
+                if(res.responseJSON != undefined && res.responseJSON.statusText == "fail"){
+                    if(res.responseJSON.result == "-2"){
+                        alert("逾時過久或登入異常，請重新登入");
+                        if(window.name == "subWindow"){
+                            window.close();
+                            window.opener.location.href = "/Home/logOut";
+                        }else{
+                            window.location.href = "/Home/logOut";
+                        }
+                    }  
+                }else{
+                    alert("error");
+                }
+            }
         });   
     }
     rAjaxFn(type, url, data, successFn)
@@ -42,13 +46,24 @@
             url : url,     
             data: data,       
             success:function(res){
-                successFn(res); 
+                successFn(res);          
             },
-            error:function(){alert("error");}
+            error:function(res){
+                if(res.responseJSON != undefined && res.responseJSON.statusText == "fail"){
+                    if(res.responseJSON.result == "-2"){
+                        alert("逾時過久或登入異常，請重新登入");
+                        if(window.name == "subWindow"){
+                            window.close();
+                            window.opener.location.href = "/Home/logOut";
+                        }else{
+                            window.location.href = "/Home/logOut";
+                        }
+                    }  
+                }else{
+                    alert("error");
+                }
+            }
         });   
-    }
-    getAccountList(type, url, successFn){
-        this.rAjaxFn(type, url, null, successFn)
     }
     openSubWindow(width, height, url, closeFn)
     {

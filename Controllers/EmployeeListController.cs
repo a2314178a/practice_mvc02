@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,12 +9,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using practice_mvc02.filters;
 using practice_mvc02.Models;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Controllers
 {
+    [TypeFilter(typeof(ActionFilter))]
     public class EmployeeListController : BaseController
     {
         public MasterRepository Repository { get; }
@@ -26,14 +29,8 @@ namespace practice_mvc02.Controllers
         }
 
         public IActionResult Index()
-        {           
-            if(loginFn.isLoginInfo(loginID, loginGroupID) &&
-             ((ruleVal & ruleCode.departEmployeeList) > 0 || (ruleVal & ruleCode.allEmployeeList) > 0)
-            ){
-                return selectPage();
-            }else{
-                return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
-            }
+        {       
+            return selectPage();    
         }
         
         public IActionResult selectPage(){
@@ -47,57 +44,59 @@ namespace practice_mvc02.Controllers
  
         //--------------------------------------------------------------------------------
         #region employee
-        public object getThisLvAllAcc(){
+        public object getThisLvAllAcc(string fName, string fDepart, string fPosition){
+            fName = String.IsNullOrEmpty(fName)? "" : fName;
+            fDepart = String.IsNullOrEmpty(fDepart)? "" : fDepart;
+            fPosition = String.IsNullOrEmpty(fPosition)? "" : fPosition;
             var crossDepart = ((ruleVal & ruleCode.allEmployeeList) > 0)? true: false;
-            return Repository.GetThisLvAllAcc(loginID, crossDepart, (int)loginAccLV);
+            return Repository.GetThisLvAllAcc((int)loginID, crossDepart, (int)loginAccLV, fName, fDepart, fPosition);
+        }
+
+        public object getFilterOption(){
+            object departOption = Repository.GetDepartOption();
+            object positionOption = Repository.GetPositionOption();
+            return new{department = departOption, position = positionOption};
         }
 
         public object getAccountDetail(int employeeID){
             return Repository.GetAccountDetail(employeeID);
         }
         
-        public int createEmployee(Account newEmployee){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.employeeEdit)==0){
-                return -2;
-            }
+        public int createEmployee(Account newEmployee, EmployeeDetail employeeDetail){
             newEmployee.password = loginFn.GetMD5(newEmployee.account + newEmployee.password);
-            newEmployee.lastOperaAccID = (int)loginID;
-            newEmployee.createTime = DateTime.Now;
-            return Repository.CreateEmployee(newEmployee);  //-2:mulUserlongin -1:already account, 0:add fail, 1:add success
+            newEmployee.lastOperaAccID = employeeDetail.lastOperaAccID = (int)loginID;
+            newEmployee.createTime = employeeDetail.createTime = DateTime.Now;
+            return Repository.CreateEmployee(newEmployee, employeeDetail);  //-2:mulUserlongin -1:already account, 0:add fail, 1:add success
         }
 
         public int delEmployee(int employeeID){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.employeeEdit)==0){
-                return -2;
-            }
             return Repository.DelEmployee(employeeID);
         }
 
-        public int updateEmployee(Account updateData){
-            if(!loginFn.chkCurrentUser(loginID, loginTimeStamp) || (ruleVal & ruleCode.employeeEdit)==0){
-                return -2;
-            }
+        public int updateEmployee(Account updateData, EmployeeDetail employeeDetail){
             if(updateData.password != null){
                 updateData.password = loginFn.GetMD5((updateData.account + updateData.password));
             }
-            updateData.lastOperaAccID = (int)loginID;
-            updateData.updateTime = DateTime.Now;
-            return Repository.UpdateEmployee(updateData);
+            updateData.lastOperaAccID = employeeDetail.lastOperaAccID = (int)loginID;
+            updateData.updateTime = employeeDetail.updateTime = DateTime.Now;
+            return Repository.UpdateEmployee(updateData, employeeDetail);
         }
         #endregion
 
         //----------------------------------------------------------------------------------------
 
         #region subWindow
-        public IActionResult showAddForm(int? ID = null){
-            if(!loginFn.isLoginInfo(loginID, loginGroupID) ||
-             ((ruleVal & ruleCode.employeeEdit) == 0)
-            ){
+        public int chkLoginStatus(){
+            return 1;
+        }
+
+        public IActionResult showAddForm(int ID){
+            if(((ruleVal & ruleCode.employeeEdit) == 0)){
                 return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
             }
             ViewBag.ruleVal = ruleVal;
             ViewBag.loginAccLV = loginAccLV;
-            if(ID == null){
+            if(ID == 0){
                 ViewBag.Action = "add";
                 ViewBag.mainText = "新增人員";
             }else{     

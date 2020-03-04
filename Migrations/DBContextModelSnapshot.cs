@@ -98,6 +98,41 @@ namespace practice_mvc02.Migrations
                     b.ToTable("departments");
                 });
 
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.EmployeeDetail", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("accountID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("birthday")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("humanID")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("startWorkDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("accountID")
+                        .IsUnique();
+
+                    b.ToTable("employeedetails");
+                });
+
             modelBuilder.Entity("practice_mvc02.Models.dataTable.GroupRule", b =>
                 {
                     b.Property<int>("ID")
@@ -166,6 +201,70 @@ namespace practice_mvc02.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("leaveofficeapplys");
+                });
+
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.Message", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("content")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("title")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("message");
+                });
+
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.MsgSendReceive", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("messageID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("rDelete")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("read")
+                        .HasColumnType("int(1)");
+
+                    b.Property<int>("receiveID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("sDelete")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("sendID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("msgsendreceive");
                 });
 
             modelBuilder.Entity("practice_mvc02.Models.dataTable.PunchCardLog", b =>
@@ -303,6 +402,35 @@ namespace practice_mvc02.Migrations
                         .IsUnique();
 
                     b.ToTable("worktimerules");
+                });
+
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.workTimeTotal", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("accountID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("dateMonth")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double>("totalTime")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("accountID", "dateMonth")
+                        .IsUnique();
+
+                    b.ToTable("worktimetotals");
                 });
 #pragma warning restore 612, 618
         }

@@ -26,10 +26,11 @@ namespace practice_mvc02.Repositories
             object result = null;
             var query = from a in _DbContext.accounts
                         join b in _DbContext.departments on a.departmentID equals b.ID
+                        join c in _DbContext.employeedetails on a.ID equals c.accountID
                         where a.ID == employeeID
                         select new{
                             a.account, a.userName, a.timeRuleID, a.groupID, a.accLV,
-                            departmentID=b.ID, b.department, b.position
+                            departmentID=b.ID, b.department, b.position, c.startWorkDate
                         };
             if(query.Count()>0)
                 result = query.ToList()[0];

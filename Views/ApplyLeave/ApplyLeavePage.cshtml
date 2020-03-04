@@ -27,6 +27,17 @@
                                 <a class='nav-link @(@ViewBag.Page=="log"?"active":"")' href="#" name="applyLeaveLog" onclick="showApplyLeavePage('log');">申請紀錄</a>
                             </li>
                         </ul>
+
+                        <div id="searchFilterDiv" style="text-align:center; margin:20px auto;">
+                            <p>
+                                <form>
+                                    起始 Date: <input type="date" id="filter_sDate">&nbsp;&nbsp;&nbsp;&nbsp;
+                                    結束 Date: <input type="date" id="filter_eDate">
+                                    <input type="button" name="searchFilterBtn" value="搜尋">
+                                </form>
+                            </p>   
+                        </div>
+                        
                         @if(ViewBag.Page!="log")
                         {
                             <div id="applyLeaveDiv">

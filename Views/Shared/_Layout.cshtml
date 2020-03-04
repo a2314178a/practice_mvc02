@@ -1,5 +1,5 @@
 ﻿@{
-    bool punchBtn = (ViewBag.ruleVal & 0x0001)>0 ? true : false;
+    bool baseBtn = (ViewBag.ruleVal & 0x0001)>0 ? true : false;
     bool employeeListBtn = (ViewBag.ruleVal & 0x0004)>0 || (ViewBag.ruleVal & 0x0008)>0 ? true : false;
     bool departListBtn = (ViewBag.ruleVal & 0x0020)>0 ? true : false; 
     bool applySignBtn = (ViewBag.ruleVal & 0x0080)>0 ? true : false; 
@@ -29,7 +29,7 @@
                     <ul class="navbar-nav flex-grow-1">           
                     @if (ViewBag.Auth == "Y")
                     {       
-                        @if(punchBtn)
+                        @if(baseBtn)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="PunchCard" asp-action="Index">打卡</a>
@@ -37,7 +37,10 @@
                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="ApplyLeave" asp-action="Index">出差/請假申請</a>
                             </li>  
-                        }       
+                        }
+                        <li class="nav-item">
+                            <a id="messageLink" class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="Index">訊息</a>
+                        </li>       
                         @if(employeeListBtn)
                         {
                             <li class="nav-item">
@@ -85,6 +88,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/baseNavBar.js" type="text/javascript"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

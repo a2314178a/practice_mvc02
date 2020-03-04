@@ -3,7 +3,7 @@ var myObj = new MyObj();
 
 $(document).ready(function() {  
     
-    init();
+    getApplyLeave();
 
     $("#applyLeaveDiv").on("change", "select[name='newApplyType']", function(){
         var val = $(this).val();
@@ -13,6 +13,11 @@ $(document).ready(function() {
             $("#applyLeaveDiv").find(".newRestType").hide();
         }
     });
+
+    $("#searchFilterDiv").on("click", "[name='searchFilterBtn']", function(){
+        getApplyLeave();
+    });
+
 });//.ready function
 
 
@@ -20,23 +25,31 @@ function showApplyLeavePage(page=""){
     window.location.href = "/ApplyLeave/Index?page="+page;  
 }
 
-function init(){
-    if($("#applyLeaveDiv").length > 0){
-        getApplyLeaveIng();
-    }else{
-        getApplyLeaveLog();
-    }
-}
-
-
 
 //#region applyLeave
 
-function getApplyLeaveIng(){
-    var successFn = function(res){
-        refreshApplyLeaveIng(res);
-    };
-    myObj.rAjaxFn("post", "/ApplyLeave/getMyApplyLeave", null, successFn);
+function getApplyLeave(){
+    var page = $("#applyLeaveDiv").length > 0 ? 0 : 1;
+
+    var sDate = $("#filter_sDate").val();
+    var eDate = $("#filter_eDate").val();
+    if(((sDate == "" && eDate == "") || (sDate != "" && eDate != "")) && sDate <= eDate){
+        var successFn = function(res){
+            if(page==0){
+                refreshApplyLeaveIng(res);
+            }else{
+                refreshApplyLeaveLog(res);
+            } 
+        };
+        var data ={
+            page : page,
+            sDate : sDate,
+            eDate : eDate
+        };
+        myObj.rAjaxFn("post", "/ApplyLeave/getMyApplyLeave", data, successFn);
+    }else{
+        alert("搜尋日期格式有誤");  return;
+    }
 }
 
 function refreshApplyLeaveIng(res){
@@ -112,13 +125,13 @@ function createApplyLeave(thisBtn){
         endTime : endDate + "T" + endTime,
     };
     var successFn = function(res){
-        getApplyLeaveIng();
+        cancelApplyLeave();
     }
     myObj.cudAjaxFn("/ApplyLeave/createApplyLeave", data, successFn);
 }
 
 function cancelApplyLeave(){
-    getApplyLeaveIng();
+    getApplyLeave();
 }
 
 function editApplyLeave(thisBtn, applyingID){
@@ -176,7 +189,7 @@ function upApplyLeave(thisBtn, applyingID){
         endTime : endDate + "T" + endTime,
     };
     var successFn = function(res){
-        getApplyLeaveIng();
+        cancelApplyLeave();
     }
     myObj.cudAjaxFn("/ApplyLeave/updateApplyLeave", data, successFn);
 }
@@ -187,7 +200,7 @@ function delApplyLeave(applyingID){
         return;
     var successFn = function(res){
         if(res > 0){
-            getApplyLeaveIng();
+            cancelApplyLeave();
         }else{
             alert('fail');
         }     
@@ -203,12 +216,7 @@ function delApplyLeave(applyingID){
 
 //#region applyLog
 
-function getApplyLeaveLog(){
-    var successFn = function(res){
-        refreshApplyLeaveLog(res);
-    };
-    myObj.rAjaxFn("post", "/ApplyLeave/getMyApplyLeave?page=1", null, successFn);
-}
+
 
 function refreshApplyLeaveLog(res){
     $("#applyLeaveLogList").empty();
