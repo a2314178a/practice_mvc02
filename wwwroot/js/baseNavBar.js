@@ -12,7 +12,6 @@ var chkMsg = {
     canFlash: false,
     flashIng: false,
     chkMsgTime: 60*1000,
-    fadeTime: 2000,
     chkNewMessage: function(){
         if((location.pathname).indexOf("Message") >=0 || $("#messageLink").length ==0){
             return;
@@ -33,9 +32,9 @@ var chkMsg = {
         setTimeout("chkMsg.chkNewMessage()", chkMsg.chkMsgTime);
     },
     flashText: function(){
-        $("#messageLink").fadeToggle(chkMsg.fadeTime);
         if(chkMsg.canFlash){
-            setTimeout("chkMsg.flashText()", chkMsg.fadeTime);
+            $("#messageLink").fadeToggle(2000);
+            setTimeout("chkMsg.flashText()", 1500);
             chkMsg.flashIng = true;
         }else{
             $("#messageLink").show();

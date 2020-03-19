@@ -1,36 +1,29 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Pomelo.AspNetCore.TimedJob;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Models
 {
-    public class countWorkTimeJob : Job
+    public class CalWorkTime
     {
-        public PunchCardRepository Repository { get; }
-        public punchCardFunction punchCardFn {get;}
+        private PunchCardRepository Repository {get;}
+        private punchCardFunction punchCardFn {get;}
 
-
-        public countWorkTimeJob(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
+        public CalWorkTime(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
             this.Repository = repository;
             this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
-        }
+        } 
 
-
-        // Begin 起始時間；Interval執行時間間隔，單位是毫秒，建議使用以下格式，ex:3小時(1000 * 3600 * 3)；
-        //SkipWhileExecuting是否等待上一個執行完成，true為等待；
-        //[Invoke(Begin = "2016-11-29 22:10", Interval = 1000 * 3600*3, SkipWhileExecuting =true)]
-        [Invoke(Begin = "2020-02-21 00:00", Interval = 5000, SkipWhileExecuting =true, IsEnabled = false)]
-        public void Run()
-        {
+        public void start(){
             calEmployeeWorkTime();
-            Console.WriteLine("---------------------------------"+DateTime.Now+"-----------------------------------"); 
         }
+
+        
 
         private void calEmployeeWorkTime(){
-            var workEmployee = Repository.GetNeedPunchAcc();
+            var workEmployee = Repository.GetNeedPunchAcc("全體", 2);
             var dtNow = DateTime.Now;
             var startDT = dtNow.AddDays(1 - dtNow.Day).Date;
             var endDT = startDT.AddMonths(1).AddDays(-1).Date;
@@ -47,11 +40,11 @@ namespace practice_mvc02.Models
         private void countWorkTime(List<PunchCardLog> thisMonthAllLog, WorkTimeRule thisWorkTime){
             double totalTime = 0.0;
             double restTime = 1.0;
-            object workTime = punchCardFn.workTimeProcess(thisWorkTime);
-            DateTime sWorkDt = punchCardFn.getObjectValue("sWorkDt", workTime);
-            DateTime eWorkDt = punchCardFn.getObjectValue("eWorkDt", workTime);
+            WorkDateTime workTime = punchCardFn.workTimeProcess(thisWorkTime);
+            var sWorkDt = workTime.sWorkDt;
+            var eWorkDt = workTime.eWorkDt;
             var workAllTime = punchCardFn.getObjectValue("workAllTime", workTime);
-            var sWorkTime = sWorkDt.TimeOfDay;
+            var sWorkTime = sWorkDt.TimeOfDay;  //只取時間
             var eWorkTime = eWorkDt.TimeOfDay;
             foreach(var log in thisMonthAllLog){
                 if(log.onlineTime.Year == 1 || log.offlineTime.Year == 1 || log.onlineTime >= log.offlineTime){
@@ -65,29 +58,30 @@ namespace practice_mvc02.Models
                     totalTime += 8.0;
                 }else{
                     var length = TimeSpan.Zero;
-                    if(subEndTime < subStartTime){
-                        length = subEndTime.Add(new TimeSpan(24,0,0)) - subStartTime;
+                    if(subEndTime < subStartTime){  //23:00~08:00   
+                        length = subEndTime.Add(new TimeSpan(24,0,0)) - subStartTime;   //8+24 - 23 = 9
                     }else{
                         length = subEndTime - subStartTime;
                     }
                     totalTime += length.Hours - restTime;
                     totalTime = length.Minutes >=30 ? totalTime+0.5 : totalTime;
-                }
-                saveTotalTimeRecord(log.accountID, totalTime);
+                } 
             }
-
+            if(thisMonthAllLog.Count>0){
+                saveTotalTimeRecord(thisMonthAllLog[0].accountID, totalTime);
+            }
         }
 
         public void saveTotalTimeRecord(int accID, double totalTime){
             var timeRecord = new workTimeTotal();
             timeRecord.accountID = accID;
             timeRecord.dateMonth = DateTime.Now.AddDays(1 - DateTime.Now.Day).Date;
+            //timeRecord.dateMonth = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day).Date;
             timeRecord.totalTime = totalTime;
             timeRecord.createTime = DateTime.Now;
             Repository.SaveTotalTimeRecord(timeRecord);
         }
 
-     
 
 
 

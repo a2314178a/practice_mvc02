@@ -42,19 +42,27 @@ namespace practice_mvc02.Controllers
             object userData = Repository.Login(account, md5password);
             if(userData != null)
             {
+                var userID = (int)getObjectValue("ID", userData);
                 DateTime nowTime= DateTime.Now;
                 DateTime Jan1st1970 = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);
                 long timeStamp = Convert.ToInt64((nowTime - Jan1st1970).TotalMilliseconds);
-                int count = Repository.UpdateTimeStamp((int)getObjectValue("ID", userData), timeStamp.ToString(), nowTime);
+                int count = Repository.UpdateTimeStamp(userID, timeStamp.ToString(), nowTime);
                 if(count == 1){
                     _session.SetString("loginTimeStamp", timeStamp.ToString());
-                    _session.SetInt32("loginID", (int)getObjectValue("ID", userData));
+                    _session.SetString("loginAcc", account);
+                    _session.SetInt32("loginID", userID);
                     _session.SetInt32("loginAccLV", (int)getObjectValue("accLV", userData));
                     _session.SetString("loginName", (string)getObjectValue("userName", userData).ToString());
                     _session.SetInt32("loginDepartmentID", (int)getObjectValue("departmentID", userData));
                     _session.SetInt32("loginGroupID", (int)getObjectValue("groupID", userData));
-                    _session.SetInt32("ruleVal", (int)getObjectValue("ruleParameter", userData));
                     _session.SetInt32("principalID", (int)getObjectValue("principalID", userData));
+                    var ruleVal = (int)getObjectValue("ruleParameter", userData);
+                    _session.SetInt32("ruleVal", ruleVal);
+                    if(Repository.chkIsAgent(userID)){
+                        ruleVal = (ruleVal | ruleCode.applySign);
+                        ruleVal = (ruleVal | ruleCode.editPunchLog);
+                    }
+                    _session.SetInt32("ruleVal", ruleVal);
                     return 1;   
                 }
                 else{

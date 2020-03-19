@@ -20,7 +20,7 @@ namespace practice_mvc02.Repositories
             var query = (from a in _DbContext.worktimerules
                         orderby a.startTime
                         select new {
-                            a.ID, a.name, a.startTime, a.endTime, a.lateTime
+                            a.ID, a.name, a.startTime, a.endTime, a.restTime
                         });
             result = query.ToList();
             return result;
@@ -55,7 +55,8 @@ namespace practice_mvc02.Repositories
                     context.name = updateData.name;
                     context.startTime = updateData.startTime;
                     context.endTime = updateData.endTime;
-                    context.lateTime = updateData.lateTime;
+                    context.sRestTime = updateData.sRestTime;
+                    context.eRestTime = updateData.eRestTime;
                     context.lastOperaAccID = updateData.lastOperaAccID;
                     context.updateTime = updateData.updateTime;
                     count = _DbContext.SaveChanges();
@@ -128,8 +129,16 @@ namespace practice_mvc02.Repositories
 
         public object GetAllSpecialDate(){
             var query = _DbContext.specialdate.Select(b=> new{
-                b.ID, b.date, b.status, b.note
+                b.ID, b.departClass, b.date, b.status, b.note
             });
+            return query.ToList();
+        }
+
+        public object GetClassDepart(){
+            var query = ((from a in _DbContext.departments
+                            select a.department)).Union(
+                        (from b in _DbContext.worktimerules
+                            select b.name));
             return query.ToList();
         }
 
@@ -160,6 +169,7 @@ namespace practice_mvc02.Repositories
                 var context = _DbContext.specialdate.FirstOrDefault(b=>b.ID == updateData.ID);
                 if(context != null){
                     context.date = updateData.date;
+                    context.departClass = updateData.departClass;
                     context.status = updateData.status;
                     context.note = updateData.note;
                     context.lastOperaAccID = updateData.lastOperaAccID;
@@ -173,5 +183,55 @@ namespace practice_mvc02.Repositories
         }
 
         #endregion  //sp date
+
+        //-----------------------------------------------------------------------------------------------------
+
+        #region leaveRule
+
+        public object GetAllLeaveRule(){
+            var query = _DbContext.leavenames.Select(b=>new{
+                b.ID, b.leaveName, b.timeUnit
+            });
+            return query.ToList();
+        }
+
+        public int AddLeave(LeaveName data){
+            int count = 0;
+            try{
+                _DbContext.leavenames.Add(data);
+                count = _DbContext.SaveChanges();
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            return count;
+        }
+
+        public int DelLeave(int leaveID){
+            var context = _DbContext.leavenames.FirstOrDefault(b=>b.ID == leaveID);
+            if(context != null){
+                _DbContext.leavenames.Remove(context);
+            }
+            return _DbContext.SaveChanges() >0 ? 1: 0;
+        }
+
+        public int UpdateLeave(LeaveName data){
+            int count = 0;
+            try{
+                var context = _DbContext.leavenames.FirstOrDefault(b=>b.ID == data.ID);
+                if(context != null){
+                    context.leaveName = data.leaveName;
+                    context.timeUnit = data.timeUnit;
+                    context.lastOperaAccID = data.lastOperaAccID;
+                    context.updateTime = data.updateTime;
+                    count = _DbContext.SaveChanges();
+                }
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            return count;
+        }
+
+        #endregion //leaveRule
+
     }
 }

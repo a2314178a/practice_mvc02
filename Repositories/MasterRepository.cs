@@ -18,9 +18,33 @@ namespace practice_mvc02.Repositories
         public object GetThisLvAllAcc(int loginID, bool crossDepart, int loginAccLV, 
                                         string fName, string fDepart, string fPosition){
             object result = null;
-            
             string departName = fDepart;
-            if(!crossDepart){
+            if(crossDepart){
+                var query = from a in _DbContext.accounts
+                            join b in _DbContext.departments on a.departmentID equals b.ID
+                            where a.userName.Contains(fName) && b.department.Contains(fDepart) && 
+                                  b.position.Contains(fPosition) && a.accLV <= loginAccLV 
+                            orderby b.department
+                            select new {
+                                a.ID, a.account, a.userName,
+                                b.department, b.position,  
+                            };
+                result = query.ToList();
+            }else{
+                var query = from a in _DbContext.accounts
+                            join b in _DbContext.departments on a.departmentID equals b.ID
+                            join c in _DbContext.employeeprincipals on a.ID equals c.employeeID
+                            where c.principalID == loginID && a.userName.Contains(fName) && 
+                                  b.department.Contains(fDepart) && b.position.Contains(fPosition)                                  
+                            orderby b.department
+                            select new {
+                                a.ID, a.account, a.userName,
+                                b.department, b.position,  
+                            };
+                result = query.ToList();
+            }
+
+            /*if(!crossDepart){
                 var query01 = from a in _DbContext.departments
                             join b in _DbContext.accounts on a.ID equals b.departmentID
                             where b.ID == loginID select a.department;
@@ -38,26 +62,29 @@ namespace practice_mvc02.Repositories
                             b.department, b.position,  
                             //d.startTime, d.endTime
                         };
-            result = query.ToList();
+            result = query.ToList();*/
             
             return result;
         }
 
-        public int CreateEmployee(Account newEmployee, EmployeeDetail newDetail){
+        public int CreateEmployee(Account newEmployee, EmployeeDetail newDetail, int[] thisManager){
             int count = 0;
             var context = _DbContext.accounts.FirstOrDefault(b=>b.account == newEmployee.account);
             if(context != null){
                 return -1;  //had account
             }
-            _DbContext.accounts.Add(newEmployee);
+            _DbContext.accounts.Add(newEmployee);   //新增帳號
             count = _DbContext.SaveChanges();
             if(newEmployee.ID > 0){
                 var context2 = _DbContext.employeedetails.FirstOrDefault(b=>b.accountID == newEmployee.ID);
                 if(context2 == null){
                     newDetail.accountID = newEmployee.ID;
-                    _DbContext.employeedetails.Add(newDetail);
+                    _DbContext.employeedetails.Add(newDetail);  //新增細項
                     _DbContext.SaveChanges();
+                    setPrincipalAgent(newDetail.accountID, newDetail.myAgentID, newDetail.agentEnable);
                 }
+                var depart = _DbContext.departments.FirstOrDefault(b=>b.ID == newEmployee.departmentID);
+                saveEmployeePrincipals(newEmployee, depart, thisManager);   //新增所屬主管
             }
             return count;
         }
@@ -72,7 +99,7 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-        public int UpdateEmployee(Account updateData, EmployeeDetail upDetail){
+        public int UpdateEmployee(Account updateData, EmployeeDetail upDetail, int[] thisManager){
             int count = 0;
             var context = _DbContext.accounts.FirstOrDefault(b=>b.ID == updateData.ID);
             if(context != null){
@@ -86,16 +113,54 @@ namespace practice_mvc02.Repositories
                 context.groupID = updateData.groupID;
                 context.lastOperaAccID = updateData.lastOperaAccID;
                 context.updateTime = updateData.updateTime;
-                count = _DbContext.SaveChanges();
+                count = _DbContext.SaveChanges();       //更新帳號
+                if(count ==1){
+                    var query = _DbContext.employeeprincipals.Where(b=>b.employeeID==updateData.ID);
+                    _DbContext.RemoveRange(query);      //刪除舊所屬主管
+                    var depart = _DbContext.departments.FirstOrDefault(b=>b.ID==updateData.departmentID);
+                    saveEmployeePrincipals(updateData, depart, thisManager);       //新增所屬主管
+                }
             }
             var context2 = _DbContext.employeedetails.FirstOrDefault(b=>b.accountID == updateData.ID);
             if(context2 != null){
+                context2.sex = upDetail.sex;
+                context2.birthday = upDetail.birthday;
+                context2.humanID = upDetail.humanID;
+                context2.myAgentID = upDetail.myAgentID;
+                context2.agentEnable = upDetail.agentEnable;
                 context2.startWorkDate = upDetail.startWorkDate;
                 context2.lastOperaAccID = upDetail.lastOperaAccID;
                 context2.updateTime = upDetail.updateTime;
-                _DbContext.SaveChanges();
+                _DbContext.SaveChanges();   //更新細項
+                setPrincipalAgent(context2.accountID, context2.myAgentID, context2.agentEnable);
             }
             return count;
+        }
+
+        public void saveEmployeePrincipals(Account account, Department depart, int[] thisManager){
+            var departAgent = (from a in _DbContext.employeedetails
+                            join b in _DbContext.departments on a.accountID equals b.principalID
+                            where b.ID == depart.ID && a.agentEnable == true
+                            select a.myAgentID).FirstOrDefault();
+
+            var downWithUp = new EmployeePrincipal(){
+                employeeID = account.ID,    principalID = depart.principalID,
+                principalAgentID = departAgent,   
+                lastOperaAccID = account.lastOperaAccID,    createTime = DateTime.Now
+            };
+            _DbContext.employeeprincipals.Add(downWithUp);  //所屬部門主管一定會新增
+            _DbContext.SaveChanges();
+            foreach(var id in thisManager){
+                if(id >0 && id != depart.principalID){
+                    var thisAgent = _DbContext.employeedetails.Where(b=>b.accountID == id && b.agentEnable == true)
+                                                            .Select(b=>b.myAgentID).FirstOrDefault();
+                    downWithUp.ID = 0;
+                    downWithUp.principalID = id;
+                    downWithUp.principalAgentID = thisAgent;
+                    _DbContext.employeeprincipals.Add(downWithUp);
+                    _DbContext.SaveChanges();
+                }
+            }
         }
         
         public Account GetEmployeeAccByID(int ID){
@@ -113,7 +178,15 @@ namespace practice_mvc02.Repositories
             return query.ToList();
         }
         
-        
+        public object GetThisAllManager(int employeeID){
+            var query = from a in _DbContext.employeeprincipals
+                        join b in _DbContext.accounts on a.principalID equals b.ID
+                        where a.employeeID == employeeID
+                        select new{b.ID, b.userName};
+            return query.ToList();
+        }
+
+
         #endregion  //employee CRUD
 
 
@@ -187,7 +260,7 @@ namespace practice_mvc02.Repositories
             var query = from a in _DbContext.accounts
                         orderby a.accLV descending
                         select new{
-                            a.ID, a.userName
+                            a.ID, a.userName, a.accLV
                         };
             return query.ToList();
         }

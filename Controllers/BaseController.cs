@@ -17,6 +17,7 @@ namespace practice_mvc02.Controllers
     public class BaseController : Controller
     {
         protected ISession _session;
+        protected string loginAcc;
         protected int? loginID;
         protected int? loginAccLV;
         protected int? loginGroupID;
@@ -30,6 +31,7 @@ namespace practice_mvc02.Controllers
         public BaseController(IHttpContextAccessor httpContextAccessor)
         {
             this._session = httpContextAccessor.HttpContext.Session;
+            this.loginAcc = _session.GetString("loginAcc");
             this.loginID = _session.GetInt32("loginID");
             this.loginAccLV = _session.GetInt32("loginAccLV");
             this.loginName = _session.GetString("loginName");

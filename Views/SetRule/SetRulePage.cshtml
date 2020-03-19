@@ -27,6 +27,9 @@
                                 <a class='nav-link @(@ViewBag.Page=="specialDate"?"active":"")' href="#" name="specialDate" onclick="showSetRulePage('specialDate');">特殊日期設定</a>
                             </li>
                             <li class="nav-item">
+                                <a class='nav-link @(@ViewBag.Page=="leaveTimeRule"?"active":"")' href="#" name="leaveTimeRule" onclick="showSetRulePage('leaveTimeRule');">請假時間設定</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class='nav-link @(@ViewBag.Page=="groupRule"?"active":"")' href="#" name="groupRule" onclick="showSetRulePage('groupRule');">動作權限設定</a>
                             </li>
                         </ul>
@@ -40,7 +43,8 @@
                                             <th scope="col">班別名稱</th>
                                             <th scope="col">上班時間</th>
                                             <th scope="col">下班時間</th>
-                                            <th scope="col">遲到時間</th>
+                                            <th scope="col">開始休息時間</th> 
+                                            <th scope="col">結束休息時間</th>
                                             <th scope="col">管理動作</th>
                                         </tr>
                                     </thead> 
@@ -57,6 +61,7 @@
                                     <thead class="thead-dark" >
                                         <tr>
                                             <th scope="col">日期</th>
+                                            <th scope="col">部門班別</th>
                                             <th scope="col">狀態</th>
                                             <th scope="col">備註</th>
                                             <th scope="col">管理動作</th>
@@ -68,6 +73,23 @@
                                 <a href="javascript:void(0);" class="btn btn-primary btnActive add_spDate" style="float:right" onclick="showAddSpDateRow();">新增日期</a>   
                             </div>
                         } 
+                        else if(@ViewBag.Page == "leaveTimeRule")
+                        {
+                            <div id="leaveTimeDiv">
+                                <table class="table table-hover table-bordered leave_table">
+                                    <thead class="thead-dark" >
+                                        <tr>
+                                            <th scope="col">請假名稱</th>
+                                            <th scope="col">請假時間單位</th>
+                                            <th scope="col">管理動作</th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody id="leaveList">
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0);" class="btn btn-primary btnActive add_leave" style="float:right" onclick="showAddLeaveRow();">新增請假名稱</a>  
+                            </div>
+                        }
                         else if(ViewBag.Page == "groupRule")
                         {
                             <div id="groupRuleDiv">
@@ -101,7 +123,8 @@
                         <td scope="col" name="name"></td>
                         <td scope="col" name="startTime"></td>
                         <td scope="col" name="endTime"></td>
-                        <td scope="col" name="lateTime"></td>
+                        <td scope="col" name="sRestTime"></td>
+                        <td scope="col" name="eRestTime"></td>
                         <td scope="col" width="20%">
                             <a href="javascript:void(0);" class="btn btn-primary edit_timeRule btnActive" >編輯</a>
                             <a href="javascript:void(0);" class="btn btn-danger del_timeRule btnActive" >刪除</a>
@@ -117,9 +140,13 @@
                         <td scope="col" name="endTime">
                             <input type='time' name="newEndTime" style='zoom:75%'>
                         </td>
-                        <td scope="col" name="lateTime">
-                        <input type='time' name="newLateTime" style='zoom:75%'>
+                        <td scope="col" name="sRestTime"> 
+                            <input type='time' name="newSRestTime" style='zoom:75%'>
                         </td>
+                        <td scope="col" name="eRestTime"> 
+                            <input type='time' name="newERestTime" style='zoom:75%'>
+                        </td>
+
                         <td scope="col" width="20%">
                             <a href="javascript:void(0);" class="btn btn-primary create_timeRule" >新增</a>
                             <a href="javascript:void(0);" class="btn btn-primary update_timeRule" >更新</a>
@@ -153,6 +180,7 @@
                 {
                     <tr name="specialDateRow">
                         <td scope="col" name="date"></td>
+                        <td scope="col" name="needClass"></td>
                         <input type="hidden" name="statusVal">
                         <td scope="col" name="status"></td>
                         <td scope="col" name="note"></td>
@@ -164,6 +192,11 @@
                     <tr name="addSpecialDateRow">
                         <td scope="col" name="name">
                             <input type='date' name="newDate" style='zoom:75%'>
+                        </td>
+                        <td>
+                            <select name="needClassVal">
+                                <option value="全體">全體</option>
+                            </select>
                         </td>
                         <td scope="col">
                             <select name="status">
@@ -179,6 +212,34 @@
                             <a href="javascript:void(0);" class="btn btn-primary create_spDate" >新增</a>
                             <a href="javascript:void(0);" class="btn btn-primary update_spDate" >更新</a>
                             <a href="javascript:void(0);" class="btn btn-danger cancel_spDate" >取消</a>
+                        </td>
+                    </tr> 
+                }
+                else if(@ViewBag.Page == "leaveTimeRule")
+                {
+                    <tr name="leaveRow">
+                        <td scope="col" name="name"></td>
+                        <td scope="col" name="timeUnit"></td>
+                        <td scope="col">
+                            <a href="javascript:void(0);" class="btn btn-primary edit_leave btnActive" >編輯</a>
+                            <a href="javascript:void(0);" class="btn btn-danger del_leave btnActive" >刪除</a>
+                        </td>
+                    </tr>
+                    <tr name="addLeaveRow">
+                        <td scope="col" name="name">
+                            <input type="text" name="newLeaveName">
+                        </td>
+                        <td scope="col">
+                            <select name="unit">
+                                <option value="1">全天</option>
+                                <option value="2">半天</option>
+                                <option value="3">小時</option>
+                            </select>
+                        </td>
+                        <td scope="col">
+                            <a href="javascript:void(0);" class="btn btn-primary create_leave" >新增</a>
+                            <a href="javascript:void(0);" class="btn btn-primary update_leave" >更新</a>
+                            <a href="javascript:void(0);" class="btn btn-danger cancel_leave" >取消</a>
                         </td>
                     </tr> 
                 }

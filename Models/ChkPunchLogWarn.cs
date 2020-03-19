@@ -1,37 +1,30 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Pomelo.AspNetCore.TimedJob;
 using practice_mvc02.Models.dataTable;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Models
 {
-    public class RefreshPunchLogWarnJob : Job
+    public class ChkPunchLogWarn
     {
-        public PunchCardRepository Repository { get; }
-        public punchCardFunction punchCardFn {get;}
+        private PunchCardRepository Repository {get;}
+        private punchCardFunction punchCardFn {get;}
 
-
-        public RefreshPunchLogWarnJob(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
+        public ChkPunchLogWarn(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor){
             this.Repository = repository;
             this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
+        } 
+
+        public void start(int chkStatusDay = 7){
+            for(int i=1; i<=chkStatusDay; i++){
+                addPunchLogWhenNoPunch(i);
+            }
+            punchCardProcess(chkStatusDay);
         }
 
-
-        // Begin 起始時間；Interval執行時間間隔，單位是毫秒，建議使用以下格式，ex:3小時(1000 * 3600 * 3)；
-        //SkipWhileExecuting是否等待上一個執行完成，true為等待；
-        //[Invoke(Begin = "2016-11-29 22:10", Interval = 1000 * 3600*3, SkipWhileExecuting =true)]
-        [Invoke(Begin = "2020-02-21 00:00", Interval = 5000, SkipWhileExecuting =true, IsEnabled = false)]
-        public void Run()
-        {
-            addPunchLogWhenNoPunch();
-            punchCardProcess();
-            Console.WriteLine(DateTime.Now); 
-        }
-
-        private void addPunchLogWhenNoPunch(){
-            var targetDate = (DateTime.Now.Date).AddDays(-1);
+        private void addPunchLogWhenNoPunch(int rangeDay){
+            var targetDate = (DateTime.Now.Date).AddDays(-rangeDay);
             var spDate = Repository.GetThisSpecialDate(targetDate);
             List<Account> needPunchAcc = new List<Account>(){};
 
@@ -39,16 +32,16 @@ namespace practice_mvc02.Models
                 if((targetDate.DayOfWeek.ToString("d")== "0" || targetDate.DayOfWeek.ToString("d")== "6")){
                     return;
                 }else{
-                    needPunchAcc = Repository.GetNeedPunchAcc();
+                    needPunchAcc = Repository.GetNeedPunchAcc("全體", 2);
                 }
             }else{
-                if(spDate.status == 1){
+                if(spDate.status == 1 && spDate.departClass=="全體"){ //1:休假 2:上班
                     return;
-                }else{
-                    needPunchAcc = Repository.GetNeedPunchAcc();
+                }else{  //全體 上班 , 個別 休假
+                    needPunchAcc = Repository.GetNeedPunchAcc(spDate.departClass, spDate.status);
                 }
             }
-
+            
             foreach(var employee in needPunchAcc){
                 var logData = Repository.GetWorkDatePunchLog(employee.ID, targetDate);
                 if(logData == null){
@@ -57,15 +50,19 @@ namespace practice_mvc02.Models
             }
         }
 
-        private void punchCardProcess(){
+        private void punchCardProcess(int chkStatusDay){
             List<PunchCardLog> warnLog = new List<PunchCardLog>();
-            warnLog = Repository.GetAllPunchLogWithWarn();
+            warnLog = Repository.GetAllPunchLogWithWarn(chkStatusDay);
             
             foreach (PunchCardLog log in warnLog){
                 WorkTimeRule thisWorkTime = Repository.GetThisWorkTime(log.accountID);
                 punchCardFn.processPunchlogWarn(log, thisWorkTime);
+                //punchCardFn.processTakeLeaveWithLog(thisTakeLeave);
             }   
         }
+        
+
+
 
 
 

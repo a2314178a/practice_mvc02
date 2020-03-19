@@ -15,15 +15,15 @@ namespace practice_mvc02.Repositories
         public object Login(string account, string password)
         {
             //var query = _DbContext.accounts.FirstOrDefault(b=>b.account == account && b.password == password);  
-            var query = from a in _DbContext.accounts
+            var query = (from a in _DbContext.accounts
                        join b in _DbContext.grouprules on a.groupID equals b.ID
                        join c in _DbContext.departments on a.departmentID equals c.ID
                        where a.account == account && a.password == password
                        select new{
                            a.ID, a.userName, a.departmentID, a.accLV, a.groupID,
                            b.ruleParameter, c.principalID
-                       };
-            return query.Count() == 1? query.ToList()[0] : null;
+                       }).FirstOrDefault();
+            return query;
         }
 
         public int UpdateTimeStamp(int id, string timeStamp, DateTime updateTime)
@@ -34,6 +34,11 @@ namespace practice_mvc02.Repositories
             userContext.updateTime = updateTime;
             count = _DbContext.SaveChanges();
             return count;
+        }
+
+        public bool chkIsAgent(int id){
+            var context = _DbContext.employeeprincipals.Where(b=>b.principalAgentID == id);
+            return context.Count()>0? true : false;
         }
 
         /*public int getThisGroupRuleVal(int groupID){

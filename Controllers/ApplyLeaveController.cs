@@ -19,12 +19,14 @@ namespace practice_mvc02.Controllers
     public class ApplyLeaveController : BaseController
     {
         public ApplySignRepository Repository { get; }
-        public loginFunction loginFn {get;}
+        public PunchCardRepository RepositoryPunch {get;}
+        public punchCardFunction punchCardFn {get;}
 
-        public ApplyLeaveController(ApplySignRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
+        public ApplyLeaveController(ApplySignRepository repository, PunchCardRepository repository02,IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
+            this.RepositoryPunch = repository02;
+            this.punchCardFn = new punchCardFunction(repository02, httpContextAccessor);
         }
 
         public IActionResult Index(string page)
@@ -50,23 +52,78 @@ namespace practice_mvc02.Controllers
             return Repository.GetMyApplyLeave((int)loginID, page, sDate, eDate);
         }
 
-        public int createApplyLeave(LeaveOfficeApply newApply){
-            newApply.accountID = (int)loginID;
-            newApply.principalID = (int)principalID;
-            newApply.applyStatus = 0;
-            newApply.createTime = DateTime.Now;
-            newApply.lastOperaAccID = (int)loginID;
-            return Repository.CreateApplyLeave(newApply);
+        public object getLeaveOption(){
+            return Repository.GetLeaveOption();
+        }
+
+        public int addUpApplyLeave(LeaveOfficeApply data){
+            data.endTime = getLeaveEndTime(data);
+            int result = 0;
+            data.accountID = data.lastOperaAccID = (int)loginID;
+            data.principalID = (int)principalID;
+            if(data.ID ==0){
+                data.createTime = DateTime.Now;
+                result = Repository.CreateApplyLeave(data);
+                if(result == 1){
+                    Repository.systemSendMessage(loginName, (int)loginID, "leave");
+                }
+            }else{
+                data.updateTime = DateTime.Now;
+                result = Repository.UpdateApplyLeave(data);
+            }
+            return result;
         }
 
         public int delApplyLeave(int applyingID){
             return Repository.DelApplyLeave(applyingID);
         }
 
-        public int updateApplyLeave(LeaveOfficeApply updateApply){
-            updateApply.lastOperaAccID = (int)loginID;
-            updateApply.updateTime = DateTime.Now;
-            return Repository.UpdateApplyLeave(updateApply);
+        public DateTime getLeaveEndTime(LeaveOfficeApply data){
+
+            var eTime = data.startTime;
+            var workTime = RepositoryPunch.GetThisWorkTime((int)loginID);
+            WorkDateTime wdt = punchCardFn.workTimeProcess(workTime);
+            var workLengthMinute = (wdt.eWorkDt - wdt.sWorkDt).TotalMinutes;
+            workLengthMinute = workLengthMinute <0? workLengthMinute + 24*60 : workLengthMinute;
+            var restLengthMinute = (wdt.eRestDt - wdt.sRestDt).TotalMinutes;
+            restLengthMinute = restLengthMinute <0? restLengthMinute + 24*60 : restLengthMinute;
+
+            var myDepartClass = (Repository.GetMyDepartClass((int)loginID)).Split(",");
+            var totalMin = 0.0;
+
+            switch(data.unit){
+                case 1: totalMin = data.unitVal * (workLengthMinute - restLengthMinute); break;
+                case 2: totalMin = 0.5 * data.unitVal * (workLengthMinute - restLengthMinute); break;
+                case 3: totalMin = data.unitVal * 60; break;
+            }
+ 
+            for(int i=1; i<=totalMin; i++){
+                if(eTime.Hour == wdt.sRestDt.Hour && eTime.Minute == wdt.sRestDt.Minute){
+                    eTime = eTime.AddMinutes(restLengthMinute);
+                }
+                if(eTime.Hour == wdt.eWorkDt.Hour && eTime.Hour ==  wdt.eWorkDt.Hour){
+                    eTime = eTime.AddDays(1).AddMinutes(-workLengthMinute);
+                    var flag = true;
+                    do{
+                        var spDate = RepositoryPunch.GetThisSpecialDate(eTime);
+                        if(spDate == null){
+                            if((eTime.DayOfWeek.ToString("d")== "0" || eTime.DayOfWeek.ToString("d")== "6")){
+                                eTime = eTime.AddDays(1);
+                            }else{
+                                flag = false;
+                            }
+                        }else{
+                            if(spDate.status == 1 && Array.IndexOf(myDepartClass, spDate.departClass) >-1){ //1:休假 2:上班
+                                eTime = eTime.AddDays(1);
+                            }else{
+                                flag = false;
+                            }
+                        }
+                    }while(flag); 
+                }
+                eTime = eTime.AddMinutes(1);
+            }
+            return eTime;
         }
 
         #endregion //leaveOffice

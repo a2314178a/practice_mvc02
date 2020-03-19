@@ -38,6 +38,7 @@ namespace practice_mvc02.Controllers
             ViewBag.canEmployeeEdit = (ruleVal & ruleCode.employeeEdit) > 0 ? true : false;
             ViewData["loginName"] = loginName;
             ViewBag.Auth = "Y";
+            ViewBag.ID = (int)loginID;
             ViewBag.loginAccLV = loginAccLV;
             return View("EmployeeListPage");
         }
@@ -59,27 +60,30 @@ namespace practice_mvc02.Controllers
         }
 
         public object getAccountDetail(int employeeID){
-            return Repository.GetAccountDetail(employeeID);
-        }
-        
-        public int createEmployee(Account newEmployee, EmployeeDetail employeeDetail){
-            newEmployee.password = loginFn.GetMD5(newEmployee.account + newEmployee.password);
-            newEmployee.lastOperaAccID = employeeDetail.lastOperaAccID = (int)loginID;
-            newEmployee.createTime = employeeDetail.createTime = DateTime.Now;
-            return Repository.CreateEmployee(newEmployee, employeeDetail);  //-2:mulUserlongin -1:already account, 0:add fail, 1:add success
+            object detail = Repository.GetAccountDetail(employeeID);
+            object thisAllManager = Repository.GetThisAllManager(employeeID);
+            return new{detail, manager=thisAllManager};
         }
 
         public int delEmployee(int employeeID){
             return Repository.DelEmployee(employeeID);
         }
 
-        public int updateEmployee(Account updateData, EmployeeDetail employeeDetail){
-            if(updateData.password != null){
-                updateData.password = loginFn.GetMD5((updateData.account + updateData.password));
+        public int addUpdateEmployee(Account accData, EmployeeDetail employeeDetail, int[] thisManager, string action){
+            int result = 0;
+            accData.lastOperaAccID = employeeDetail.lastOperaAccID = (int)loginID;
+            if(action =="add"){
+                accData.password = loginFn.GetMD5(accData.account + accData.password);
+                accData.createTime = employeeDetail.createTime = DateTime.Now;
+                result = Repository.CreateEmployee(accData, employeeDetail, thisManager);  //-2:mulUserlongin -1:already account, 0:add fail, 1:add success
+            }else if(action == "update"){
+                if(accData.password != null){
+                    accData.password = loginFn.GetMD5((accData.account + accData.password));
+                }
+                accData.updateTime = employeeDetail.updateTime = DateTime.Now;
+                result = Repository.UpdateEmployee(accData, employeeDetail, thisManager);
             }
-            updateData.lastOperaAccID = employeeDetail.lastOperaAccID = (int)loginID;
-            updateData.updateTime = employeeDetail.updateTime = DateTime.Now;
-            return Repository.UpdateEmployee(updateData, employeeDetail);
+            return result;
         }
         #endregion
 
@@ -116,7 +120,9 @@ namespace practice_mvc02.Controllers
             }
             object timeOption = Repository.GetAllTimeRule();
             object groupOption = Repository.GetAllGroup();
-            return new{departOption=departOption, timeOption=timeOption, groupOption=groupOption};
+            object employeeOption = Repository.GetAllPrincipal();
+
+            return new{departOption, timeOption, groupOption, employeeOption};             
         }
         
         #endregion

@@ -52,9 +52,9 @@ namespace practice_mvc02.Repositories
             return result;
         }
 
-        public object GetAllPunchLogByID(int employeeID){
+        public object GetPunchLogByIDByMonth(int employeeID, DateTime startMonth, DateTime endMonth){
             var query = from a in _DbContext.punchcardlogs
-                        where a.accountID == employeeID
+                        where a.accountID == employeeID && a.logDate >= startMonth && a.logDate <= endMonth 
                         orderby a.logDate descending
                         select new{
                             a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus
@@ -62,12 +62,11 @@ namespace practice_mvc02.Repositories
             return query.ToList();
         }
 
-        public object GetPunchLogByIDByDate(int employeeID, DateTime sDate, DateTime eDate){
-            var query = from a in _DbContext.punchcardlogs
-                        where a.accountID == employeeID && a.logDate >= sDate && a.logDate <= eDate
-                        orderby a.logDate
+        public object GetPunchLogByIDByDate(int employeeID, DateTime queryDate){
+            var query = from a in _DbContext.punchcardlogs    
+                        where a.accountID == employeeID && a.logDate == queryDate  
                         select new{
-                            a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus
+                            a.ID, a.logDate, a.onlineTime, a.offlineTime, a.punchStatus,
                         };
             return query.ToList();
         }
@@ -124,23 +123,20 @@ namespace practice_mvc02.Repositories
         }
 
         public WorkTimeRule GetThisWorkTime(int employeeID){
-            WorkTimeRule result = null;
-            var query = from a in _DbContext.accounts
+            var query = (from a in _DbContext.accounts
                         join b in _DbContext.worktimerules on a.timeRuleID equals b.ID
                         where a.ID == employeeID
-                        select b;
-            if(query.Count()>0){
-                result = query.ToList()[0];
-            }
-            return result;
+                        select b
+                        ).FirstOrDefault();
+            return query;
         }
 
         public void AddPunchLogWarnAndMessage(PunchCardLog log){
             var query = (from a in _DbContext.departments 
-                                join b in _DbContext.punchcardlogs on a.ID equals b.departmentID
-                                join c in _DbContext.accounts on b.accountID equals c.ID
-                                where b.ID == log.ID
-                                select new{a.principalID, c.userName}).FirstOrDefault();
+                        join b in _DbContext.punchcardlogs on a.ID equals b.departmentID
+                        join c in _DbContext.accounts on b.accountID equals c.ID
+                        where b.ID == log.ID
+                        select new{a.principalID, b.accountID, c.userName}).FirstOrDefault();
 
             var warnLog = new PunchLogWarn();
             warnLog.accountID = log.accountID;
@@ -152,17 +148,7 @@ namespace practice_mvc02.Repositories
             if(context == null){
                 _DbContext.punchlogwarns.Add(warnLog);
                 if(_DbContext.SaveChanges() > 0){
-                    var title = "系統通知";
-                    var content = query.userName + "打卡異常，如有需要請前往處理，謝謝";
-                    var msg = new Message{title=title, content=content, createTime=DateTime.Now};
-                    _DbContext.message.Add(msg);
-                    _DbContext.SaveChanges();
-                    var msgID = msg.ID;
-                    if(msgID > 0){
-                        var record = new MsgSendReceive{messageID=msgID, receiveID=query.principalID, createTime=DateTime.Now};
-                        _DbContext.msgsendreceive.Add(record);
-                        _DbContext.SaveChanges();
-                    }
+                    systemSendMessage(query.userName, query.accountID, "punch");
                 }
             }
         }
@@ -176,15 +162,34 @@ namespace practice_mvc02.Repositories
             }
         }
 
-        //-------------------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------------------------
+
 
         public SpecialDate GetThisSpecialDate(DateTime targetDay){
-            var query = _DbContext.specialdate.FirstOrDefault(b=>b.date == targetDay);
+            var query = _DbContext.specialdate.FirstOrDefault(b=>b.date == targetDay.Date);
             return query;
         }
 
-        public List<Account> GetNeedPunchAcc(){
-            var query = _DbContext.accounts.Where(b=>b.timeRuleID > 0);
+        public List<Account> GetNeedPunchAcc(string departClass, int type){
+            List<Account> query = new List<Account>(){};
+            string filter = departClass == "全體"? "": departClass;
+
+            if(type == 2){  //上班
+                query = (from a in _DbContext.accounts
+                         join b in _DbContext.departments on a.departmentID equals b.ID
+                         join c in _DbContext.worktimerules on a.timeRuleID equals c.ID
+                         where (b.department.Contains(filter) || c.name.Contains(filter))
+                         select a
+                         ).ToList();
+            }else if(type == 1){    
+                query = (from a in _DbContext.accounts
+                         join b in _DbContext.departments on a.departmentID equals b.ID
+                         join c in _DbContext.worktimerules on a.timeRuleID equals c.ID
+                         where (b.department != filter && c.name != filter)
+                         select a
+                         ).ToList();
+            }
             return query.ToList();
         }
 
@@ -209,10 +214,18 @@ namespace practice_mvc02.Repositories
             }
         }
 
-        public List<PunchCardLog> GetAllPunchLogWithWarn(){
-            var dtNow = DateTime.Now;
-            var dtRange = dtNow.AddDays(-7);
-            var query = _DbContext.punchcardlogs.Where(b=>(b.punchStatus == 0 || b.offlineTime.Year == 1) && b.logDate > dtRange);                                           
+        public List<PunchCardLog> GetAllPunchLogWithWarn(int day){
+            var dtRange = DateTime.Now.Date.AddDays(-1*day);
+            var query = _DbContext.punchcardlogs.Where(b=> b.punchStatus != 0x01 && b.logDate >= dtRange);                                           
+            return query.ToList();
+        }
+
+        public List<LeaveOfficeApply> GetThisTakeLeave(int accID, DateTime sWorkTime, DateTime eWorkTime){
+            var query = _DbContext.leaveofficeapplys.Where(
+                    b=>b.accountID == accID && b.applyStatus == 1 && 
+                    ((sWorkTime >= b.startTime && sWorkTime < b.endTime) || 
+                     (eWorkTime > b.startTime && eWorkTime <= b.endTime))
+                );
             return query.ToList();
         }
 

@@ -49,21 +49,21 @@ namespace practice_mvc02.Controllers
            return Repository.GetAllTimeRule();
        }
 
-        public int addTimeRule(WorkTimeRule newRule){
-            newRule.lastOperaAccID = (int)loginID;
-            newRule.createTime = DateTime.Now;
-            return Repository.AddTimeRule(newRule);
+        public int addUpTimeRule(WorkTimeRule data){
+            data.lastOperaAccID = (int)loginID;
+            if(data.ID==0){
+                data.createTime = DateTime.Now;
+                return Repository.AddTimeRule(data);
+            }else{
+                data.updateTime = DateTime.Now;
+                return Repository.UpdateTimeRule(data);
+            }
         }
 
         public int delTimeRule(int timeRuleID){
             return Repository.DelTimeRule(timeRuleID);
         }
 
-        public int updateTimeRule(WorkTimeRule updateData){
-            updateData.lastOperaAccID = (int)loginID;
-            updateData.updateTime = DateTime.Now;
-            return Repository.UpdateTimeRule(updateData);
-        }
         #endregion //timeRule
         
         //-----------------------------------------------------------------------------------------------------
@@ -99,6 +99,10 @@ namespace practice_mvc02.Controllers
             return Repository.GetAllSpecialDate();
         }
 
+        public object getClassDepart(){
+            return Repository.GetClassDepart();
+        }
+
         public int addUpSpecialTime(SpecialDate spDate){
             spDate.lastOperaAccID = (int)loginID;
             if(spDate.ID == 0){     
@@ -115,6 +119,32 @@ namespace practice_mvc02.Controllers
         }
 
         #endregion //specialDate
+
+        //----------------------------------------------------------------------------------------------------------------------
+
+        #region leaveTimeRule
+        
+        public object getAllLeaveRule(){
+            return Repository.GetAllLeaveRule();
+        }
+
+        public int addUpLeave(LeaveName data){
+            data.lastOperaAccID = (int)loginID;
+            if(data.ID == 0){
+               data.createTime = DateTime.Now;
+               return Repository.AddLeave(data);
+            }else{
+                data.updateTime = DateTime.Now;
+                return Repository.UpdateLeave(data);
+            }
+        }
+
+        public int delLeave(int leaveID){
+            return Repository.DelLeave(leaveID);
+        }
+
+
+        #endregion //leaveTimeRule
 
 
         

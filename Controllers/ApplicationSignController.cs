@@ -20,7 +20,7 @@ namespace practice_mvc02.Controllers
     {
         public ApplySignRepository Repository { get; }
         public loginFunction loginFn {get;}
-
+        
         public ApplicationSignController(ApplySignRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
@@ -57,6 +57,8 @@ namespace practice_mvc02.Controllers
             return Repository.IgnorePunchLogWarn(punchLogID);
         }
 
+        
+
         #endregion //punchWarn
         
         //--------------------------------------------------------------------------------------------------------
@@ -68,7 +70,11 @@ namespace practice_mvc02.Controllers
         }
 
         public int isAgreeApplyLeave(int applyLeaveID, int isAgree){
-            return Repository.IsAgreeApplyLeave(applyLeaveID, isAgree, (int)loginID);
+            LeaveOfficeApply context = Repository.IsAgreeApplyLeave(applyLeaveID, isAgree, (int)loginID);
+            if(context != null){
+                Repository.punchLogWithTakeLeave(context, (int)loginDepartmentID);
+            }
+            return context == null? 0 : 1;
         }
 
         #endregion //leaveOffice

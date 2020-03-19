@@ -20,13 +20,11 @@ namespace practice_mvc02.Controllers
     public class PunchCardController : BaseController
     {
         public PunchCardRepository Repository { get; }
-        public loginFunction loginFn {get;}
         public punchCardFunction punchCardFn {get;}
 
         public PunchCardController(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
             this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
         }
 
@@ -52,7 +50,7 @@ namespace practice_mvc02.Controllers
             ViewBag.canEditPunchLog = false;
             ViewBag.showPunchBtn = true;
             if(page == "log"){
-                return View("PunchCardLogPage");
+                return View("PunchCardLogPage_cal");
             }else if(page == "total"){
                 return View("TimeTotalPage");
             }
@@ -75,7 +73,7 @@ namespace practice_mvc02.Controllers
             ViewBag.showPunchBtn = targetID == (int)loginID? true : false;
             ViewBag.canEditPunchLog = (ruleVal & ruleCode.editPunchLog)>0 ? true : false;
             if(page=="log"){
-                return View("PunchCardLogPage");
+                return View("PunchCardLogPage_cal");
             }
             return View("TimeTotalPage");
             //return RedirectToAction("logOut", "Home"); //轉址到特定Controller的ACTION名字
@@ -107,17 +105,29 @@ namespace practice_mvc02.Controllers
             return punchCardFn.punchCardProcess(logData, thisWorkTime, action, employeeID);
         }
 
-        public object getAllPunchLogByID(int employeeID){
+        public object getPunchLogByIDByMonth(int employeeID, DateTime queryStart, DateTime queryEnd){
             if(employeeID == 0)
                 employeeID = (int)loginID;
-            return Repository.GetAllPunchLogByID(employeeID);
+            return Repository.GetPunchLogByIDByMonth(employeeID, queryStart, queryEnd);
         }
 
-        public object getPunchLogByIDByDate(int employeeID, DateTime sDate, DateTime eDate){
+        public object getPunchLogByIDByDate(int employeeID, DateTime qDateStr){
             if(employeeID == 0)
                 employeeID = (int)loginID;
-            return Repository.GetPunchLogByIDByDate(employeeID, sDate, eDate);
+            
+            WorkDateTime workTime = punchCardFn.workTimeProcess(Repository.GetThisWorkTime(employeeID), new PunchCardLog(){logDate=qDateStr});
+            var sWorkDt = workTime.sWorkDt;
+            var eWorkDt = workTime.eWorkDt;
+            var punchLog = Repository.GetPunchLogByIDByDate(employeeID, qDateStr);
+            List<LeaveOfficeApply> takeLeave = Repository.GetThisTakeLeave(employeeID, sWorkDt, eWorkDt);
+            List<object> leave = new List<object>();
+            foreach(var tmp in takeLeave){
+                leave.Add(new{tmp.startTime, tmp.endTime});
+            }
+
+            return new{punchLog=punchLog, takeLeave=leave};
         }
+
 
 
         public int forceAddPunchCardLog(PunchCardLog newPunchLog){

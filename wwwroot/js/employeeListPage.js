@@ -51,14 +51,11 @@ function getAccountByFilter(){
 function refreshAccList(res){
     $("#accountList").empty();
     res.forEach(function(value){
-        //myObj.timeSpanToTime(value);
         var row = $(".template").find("[name='accountRow']").clone();
         row.find("[name='account']").text(value.account);
         row.find("[name='userName']").find('a').attr("onclick","showThisPunchLog("+value.id+");").text(value.userName);
         row.find("[name='department']").text(value.department);
         row.find("[name='position']").text(value.position);
-        //var text = value.startTime + " ~ " + value.endTime;
-        //row.find("[name='timeRule']").text(text);
         row.find(".edit_user").attr("onclick","showAddAccWindow("+value.id+");");
         row.find(".del_user").attr("onclick","delEmployee("+value.id+");");
         $("#accountList").append(row);
@@ -88,7 +85,7 @@ function showAddAccWindow(employeeID=0){
         if(res == 1){
             $('.btnActive').css('pointer-events', "none");  
             var closeFn = showEmployee;         
-            myObj.openSubWindow(550, 800, "/EmployeeList/showAddForm?ID=" + employeeID, closeFn);
+            myObj.openSubWindow(1070, 800, "/EmployeeList/showAddForm?ID=" + employeeID, closeFn);
         }
     };
     myObj.rAjaxFn("get", "/EmployeeList/chkLoginStatus", null, successFn);

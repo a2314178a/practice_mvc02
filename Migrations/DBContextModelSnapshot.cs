@@ -107,6 +107,9 @@ namespace practice_mvc02.Migrations
                     b.Property<int>("accountID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("agentEnable")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("birthday")
                         .HasColumnType("datetime(6)");
 
@@ -118,6 +121,12 @@ namespace practice_mvc02.Migrations
 
                     b.Property<int>("lastOperaAccID")
                         .HasColumnType("int");
+
+                    b.Property<int>("myAgentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("sex")
+                        .HasColumnType("int(1)");
 
                     b.Property<DateTime>("startWorkDate")
                         .HasColumnType("datetime(6)");
@@ -131,6 +140,35 @@ namespace practice_mvc02.Migrations
                         .IsUnique();
 
                     b.ToTable("employeedetails");
+                });
+
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.EmployeePrincipal", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("employeeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("principalAgentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("principalID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("employeeprincipals");
                 });
 
             modelBuilder.Entity("practice_mvc02.Models.dataTable.GroupRule", b =>
@@ -159,6 +197,32 @@ namespace practice_mvc02.Migrations
                     b.ToTable("grouprules");
                 });
 
+            modelBuilder.Entity("practice_mvc02.Models.dataTable.LeaveName", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("createTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("leaveName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("timeUnit")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("updateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("leavenames");
+                });
+
             modelBuilder.Entity("practice_mvc02.Models.dataTable.LeaveOfficeApply", b =>
                 {
                     b.Property<int>("ID")
@@ -171,9 +235,6 @@ namespace practice_mvc02.Migrations
                     b.Property<int>("applyStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("applyType")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("createTime")
                         .HasColumnType("datetime(6)");
 
@@ -181,6 +242,9 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("lastOperaAccID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("leaveID")
                         .HasColumnType("int");
 
                     b.Property<string>("note")
@@ -194,6 +258,12 @@ namespace practice_mvc02.Migrations
 
                     b.Property<DateTime>("startTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<byte>("unit")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<float>("unitVal")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
@@ -352,6 +422,9 @@ namespace practice_mvc02.Migrations
                     b.Property<DateTime>("date")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("departClass")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<int>("lastOperaAccID")
                         .HasColumnType("int");
 
@@ -378,6 +451,9 @@ namespace practice_mvc02.Migrations
                     b.Property<DateTime>("createTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<TimeSpan>("eRestTime")
+                        .HasColumnType("time");
+
                     b.Property<TimeSpan>("endTime")
                         .HasColumnType("time");
 
@@ -388,7 +464,10 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("name")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<TimeSpan>("sRestTime")
+                        .HasColumnType("time");
 
                     b.Property<TimeSpan>("startTime")
                         .HasColumnType("time");

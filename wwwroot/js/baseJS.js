@@ -109,18 +109,20 @@
             case 2: alert("密碼並不一致，請重新輸入");break;
         }        
     }
-    timeSpanToTime(value){
+    workTimeSpanToTime(value){
         var startHours = this.add0(value.startTime.hours);
         var startMinutes = this.add0(value.startTime.minutes); 
         var endHours = this.add0(value.endTime.hours); 
         var endMinutes = this.add0(value.endTime.minutes);
-        if(value.lateTime != undefined){
-            var lateHours = this.add0(value.lateTime.hours); 
-            var lateMinutes = this.add0(value.lateTime.minutes);
-        }
+        var sRestHours = this.add0(value.sRestTime.hours);
+        var sRestMinutes = this.add0(value.sRestTime.minutes);
+        var eRestHours = this.add0(value.eRestTime.hours);
+        var eRestMinutes = this.add0(value.eRestTime.minutes);
+
         value.startTime = startHours + ":" + startMinutes;
         value.endTime = endHours + ":" + endMinutes;
-        value.lateTime = lateHours + ":" + lateMinutes;
+        value.sRestTime = sRestHours + ":" + sRestMinutes;
+        value.eRestTime = eRestHours + ":" + eRestMinutes;
     }
     dateTimeFormat(time=""){
         if(time != ""){
@@ -143,6 +145,7 @@
         dt.ymdText = dt.year + "/" + dt.month + "/" + dt.day;
         dt.hmsText = dt.hour + ":" + dt.minute + ":" + dt.second;
         dt.hmText = dt.hour + ":" + dt.minute;
+        dt.ymdHtml = dt.year + "-" + dt.month + "-" + dt.day;
         return dt;
     }
     add0(num){

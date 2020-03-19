@@ -92,7 +92,6 @@ C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\staticwebassets\practice_
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\staticwebassets\practice_mvc02.StaticWebAssets.xml
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Home\employerPage.cshtml.g.cs
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\PunchCard\PunchCardPage.cshtml.g.cs
-C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Employee\employeePage.cshtml.g.cs
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\PunchCard\PunchCardLogPage.cshtml.g.cs
 R:\practice_mvc02\bin\Debug\netcoreapp3.1\appsettings.Development.json
 R:\practice_mvc02\bin\Debug\netcoreapp3.1\appsettings.json
@@ -203,3 +202,6 @@ C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\ApplicationSi
 C:\work_project\practice_mvc02\bin\Debug\netcoreapp3.1\Pomelo.AspNetCore.TimedJob.dll
 c:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\Message\MessagePage.cshtml.g.cs
 C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\PunchCard\TimeTotalPage.cshtml.g.cs
+C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\PunchCard\PunchCardLogPage_cal.cshtml.g.cs
+C:\work_project\practice_mvc02\bin\Debug\netcoreapp3.1\global.json
+C:\work_project\practice_mvc02\obj\Debug\netcoreapp3.1\Razor\Views\EmployeeDetail\EmployeeDetailPage.cshtml.g.cs
