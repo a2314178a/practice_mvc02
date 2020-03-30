@@ -1,7 +1,7 @@
 ﻿
 .allAccount_table, .allDepartment_table, .punchLog_table, 
 .allTimeRule_table, .allGroup_table, .specialDate_table,
-.timeTotal_table{
+.timeTotal_table, .annualLeave_table{
   text-align:center;
   margin-left:auto; 
   margin-right:auto;
@@ -24,7 +24,7 @@
   font-size: 18px;
 }
 
-#leaveTimeDiv{
+#leaveTimeDiv, #annualLeaveDiv{
   margin: auto;
   width: 60%;
 }
@@ -172,3 +172,9 @@ select, input, ul[group='table']{
 }
 
 
+.annualLeave_table th,.annualLeave_table td{
+  width: 25%;
+}
+.annualLeave_table select{
+  width: 80%;
+}

@@ -128,7 +128,7 @@ function refreshPunchLogList(res){
         status = (value.punchStatus & 0x08) ? status+="加班/" : status;
         status = (value.punchStatus & 0x10) ? status+="缺卡/" : status;
         status = (value.punchStatus & 0x40) ? status+="請假/" : status;
-        status = (value.punchStatus & 0x20) ? "曠職" : status;
+        status = (value.punchStatus & 0x20) ? status+="曠職" : status;
         status = (value.punchStatus & 0x01) && status == "" ? status+="正常" : status;
         status = status.charAt(status.length-1) == "/" ? status.substring(0, status.length -1) :status;
         
@@ -136,8 +136,8 @@ function refreshPunchLogList(res){
         row.find("[name='logOnlineTime']").text(dtOnTime);
         row.find("[name='logOfflineTime']").text(dtOffTime);
         row.find("[name='logPunchStatus']").text(status);
-        row.find(".edit_punchLog").attr("onclick","editPunchLog(this, "+value.id+");");
-        row.find(".del_punchLog").attr("onclick","delPunchLog("+value.id+");");
+        row.find(".edit_punchLog").attr("onclick", `editPunchLog(this, ${value.id});`);
+        row.find(".del_punchLog").attr("onclick", `delPunchLog(${value.id});`);
         $("#punchLogList").append(row).append(textRow);
     });
 }
@@ -152,8 +152,8 @@ function showAddPunchLogRow(employeeID, employeeDepartID){
     var addPunchLogRow = $(".template").find("[name='addPunchLogRow']").clone();
     addPunchLogRow.find("td[name='dateTime']").text(myObj.qDateStr);
     addPunchLogRow.find("a.update_punchLog").remove();
-    addPunchLogRow.find("a.create_punchLog").attr("onclick", "createPunchLog(this,"+employeeID+","+employeeDepartID+");");
-    addPunchLogRow.find("a.cancel_punchLog").attr("onclick", "cancelPunchLog("+employeeID+");");
+    addPunchLogRow.find("a.create_punchLog").attr("onclick", `createPunchLog(this, ${employeeID}, ${employeeDepartID});`);
+    addPunchLogRow.find("a.cancel_punchLog").attr("onclick", `cancelPunchLog(${employeeID});`);
     $('#punchLogList').append(addPunchLogRow);
 }
 
@@ -204,8 +204,8 @@ function editPunchLog(thisBtn, logID){
     updateLogRow.find("input[name='newOfflineTime']").val(thisOfflineTime);
 
     updateLogRow.find("a.create_punchLog").remove();
-    updateLogRow.find("a.update_punchLog").attr("onclick", "updatePunchLog(this, "+ logID +")");
-    updateLogRow.find("a.cancel_punchLog").attr("onclick", "cancelPunchLog("+myObj.lookEmployeeID+")");
+    updateLogRow.find("a.update_punchLog").attr("onclick", `updatePunchLog(this, ${logID})`);
+    updateLogRow.find("a.cancel_punchLog").attr("onclick", `cancelPunchLog(${myObj.lookEmployeeID})`);
 
     $(thisRow).after(updateLogRow);
 }
@@ -260,7 +260,7 @@ function getTimeTotalByID(targetID){
     var successFn = function(res){
         refreshTimeTotalList(res);
     };
-    myObj.rAjaxFn("post", "/PunchCard/getTimeTotalByID", {targetID:targetID}, successFn);
+    myObj.rAjaxFn("post", "/PunchCard/getTimeTotalByID", {targetID}, successFn);
 }
 
 function refreshTimeTotalList(res){

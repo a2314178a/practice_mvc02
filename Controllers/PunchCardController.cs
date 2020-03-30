@@ -22,10 +22,11 @@ namespace practice_mvc02.Controllers
         public PunchCardRepository Repository { get; }
         public punchCardFunction punchCardFn {get;}
 
-        public PunchCardController(PunchCardRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
+        public PunchCardController(PunchCardRepository repository, punchCardFunction fn,
+                                    IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.punchCardFn = new punchCardFunction(repository, httpContextAccessor);
+            this.punchCardFn = fn;
         }
 
         public IActionResult Index(string page, int target=0)

@@ -14,6 +14,8 @@
             success:function(res){         
                 if(res==1062){
                     alert("已有相關資料，請勿重複");
+                }else if(res==-3){
+                    alert("剩餘的特休時數不足");
                 }else if(res==-1){
                     alert("該帳號已存在");
                 }else if(res==0){

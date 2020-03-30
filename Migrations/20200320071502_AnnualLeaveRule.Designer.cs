@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20200320071502_AnnualLeaveRule")]
+    partial class AnnualLeaveRule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,38 +130,6 @@ namespace practice_mvc02.Migrations
                         .IsUnique();
 
                     b.ToTable("departments");
-                });
-
-            modelBuilder.Entity("practice_mvc02.Models.dataTable.EmployeeAnnualLeave", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("deadLine")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("employeeID")
-                        .HasColumnType("int");
-
-                    b.Property<float>("remainHours")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ruleID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("specialDays")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("updateTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("employeeannualleaves");
                 });
 
             modelBuilder.Entity("practice_mvc02.Models.dataTable.EmployeeDetail", b =>

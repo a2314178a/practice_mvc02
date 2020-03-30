@@ -10,9 +10,13 @@ namespace practice_mvc02.Repositories
     public class ApplySignRepository : BaseRepository
     {
         private punchStatusCode psCode;
-        public ApplySignRepository(DBContext dbContext):base(dbContext)
+        private punchCardFunction punchCardFn {get;} 
+        public string spName = specialName;
+        
+        public ApplySignRepository(DBContext dbContext, punchCardFunction fn):base(dbContext)
         {
             this.psCode = new punchStatusCode();
+            this.punchCardFn = fn;
         }
 
         #region punchWarn
@@ -68,7 +72,8 @@ namespace practice_mvc02.Repositories
             return query.ToList();
         }
 
-        public object GetEmployeeApplyLeave(int loginID, int page){
+        public object GetEmployeeApplyLeave(int loginID, int page, DateTime sDate, DateTime eDate){
+            var feDate = eDate.Year == 1? eDate.AddYears(9998) : eDate.AddDays(1);
             var selStatus = page == 0? 1 : 3;   //0: 待審 1:通過 2:不通過
 
             var query = from a in _DbContext.leaveofficeapplys
@@ -76,7 +81,8 @@ namespace practice_mvc02.Repositories
                         join c in _DbContext.employeeprincipals on a.accountID equals c.employeeID
                         join d in _DbContext.leavenames on a.leaveID equals d.ID
                         where (c.principalID == loginID || c.principalAgentID == loginID) &&
-                                a.accountID != loginID && a.applyStatus < 3
+                                a.accountID != loginID && a.applyStatus < selStatus && 
+                                a.createTime >= sDate && a.createTime < feDate
                         orderby a.createTime descending
                         select new{
                             a.ID, a.leaveID, a.note, a.startTime, a.endTime, a.applyStatus, a.createTime, 
@@ -133,36 +139,122 @@ namespace practice_mvc02.Repositories
             return count;
         }
 
-        public LeaveOfficeApply IsAgreeApplyLeave(int applyID, int status, int loginID){
+        public LeaveOfficeApply IsAgreeApplyLeave(int applyID, int newStatus, int loginID){
             int count = 0;
+            var leaveStatus = 0;    //0:沒動作 1:加回特休時數 2:減特休時數
             var context = _DbContext.leaveofficeapplys.FirstOrDefault(b=>b.ID == applyID);
+            var leaveName = getApplyLeaveName(context.leaveID);
             if(context != null){
-                context.applyStatus = status;
+                if(leaveName == specialName){   //申請假別為特休
+                    var oldStatus = context.applyStatus;
+                    if((oldStatus == 0 && newStatus == 1) || (oldStatus == 2 && newStatus == 1)){
+                        leaveStatus = 2;    //減特休時數
+                    }else if((oldStatus == 1 && newStatus == 2) || (oldStatus == 1 && newStatus == 0)){
+                        leaveStatus = 1;    //加回特休時數
+                    }
+                    if(!chkEmployeeAnnualLeave(context, leaveStatus)){
+                        return null;
+                    }
+                }
+                context.applyStatus = newStatus;
                 context.lastOperaAccID = loginID;
                 context.updateTime = DateTime.Now;
-                count = _DbContext.SaveChanges();
+                count = _DbContext.SaveChanges();  
+            }
+            if(count == 1 && leaveName == specialName && leaveStatus >0){
+                refreshEmployeeAnnualLeave(context, leaveStatus);
             }
             return count == 1? context : null;
+        }
+
+        public string getApplyLeaveName(int leaveID){
+            var query = _DbContext.leavenames.FirstOrDefault(b=>b.ID == leaveID);
+            return query == null? "" : query.leaveName;
+        }
+
+        public bool chkEmployeeAnnualLeave(LeaveOfficeApply context, int leaveStatus=2){
+            if(leaveStatus != 2){
+                return true;
+            }else{
+                var applyHours = 0.0f;
+                switch(context.unit){
+                    case 1: applyHours = (context.unitVal)*8; break;
+                    case 2: applyHours = (context.unitVal)*4; break;
+                    case 3: applyHours = (context.unitVal)*1; break;
+                }
+                var query = _DbContext.employeeannualleaves
+                            .Where(b=>b.employeeID == context.accountID && context.startTime < b.deadLine);
+                var haveHours = 0.0f;
+                foreach(var spDays in query){
+                    haveHours += spDays.remainHours;
+                }
+                return haveHours >= applyHours? true : false;
+            }
+        }
+
+        public void refreshEmployeeAnnualLeave(LeaveOfficeApply context, int leaveStatus){
+            var query = _DbContext.employeeannualleaves
+                            .Where(b=>b.employeeID == context.accountID && context.startTime < b.deadLine)
+                            .OrderBy(b=>b.deadLine).ToList();
+            var applyHours = 0.0f;  
+            switch(context.unit){
+                case 1: applyHours = (context.unitVal)*8; break;
+                case 2: applyHours = (context.unitVal)*4; break;
+                case 3: applyHours = (context.unitVal)*1; break;
+            } 
+            if(leaveStatus == 2){   //減時數
+                for(int i =0; i<query.Count; i++){
+                    var remainHours = query[i].remainHours;
+                    if(remainHours >= applyHours){
+                        remainHours -= applyHours;
+                        applyHours = 0;
+                    }else{
+                        applyHours -= remainHours;
+                        remainHours = 0;
+                    }
+                    query[i].remainHours = remainHours;
+                    query[i].updateTime = DateTime.Now;
+                }
+            }else if(leaveStatus == 1){ //加回時數
+                for(int i = query.Count-1; i>=0; i--){
+                    var remainHours = query[i].remainHours;
+                    if((remainHours + applyHours) > (query[i].specialDays)*8){
+                        applyHours -= ((query[i].specialDays)*8 - remainHours);
+                        remainHours = (query[i].specialDays)*8;
+                    }else{
+                        remainHours += applyHours;
+                        applyHours = 0;
+                    }
+                    query[i].remainHours = remainHours;
+                    query[i].updateTime = DateTime.Now;  
+                }
+            }   
+            _DbContext.SaveChanges();                       
         }
 
         public void punchLogWithTakeLeave(LeaveOfficeApply restLog, int departID){
             var startDate = restLog.startTime.Date;
             var endDate = restLog.endTime.Date;
+            var wtRule = (from a in _DbContext.accounts
+                             join b in _DbContext.worktimerules on a.timeRuleID equals b.ID
+                             where a.ID == restLog.accountID
+                             select b).FirstOrDefault();
             do{
-                var context = _DbContext.punchcardlogs.FirstOrDefault(b=>
+                var log = _DbContext.punchcardlogs.FirstOrDefault(b=>
                                         b.accountID == restLog.accountID && b.logDate == startDate);
-                if(context != null){
-                    context.lastOperaAccID = 0;
-                    context.updateTime = DateTime.Now;
-                    if(restLog.applyStatus == 1){
-                        context.punchStatus = context.punchStatus == psCode.noWork? psCode.takeLeave : context.punchStatus |= psCode.takeLeave; 
+                WorkDateTime wt = punchCardFn.workTimeProcess(wtRule, log);
+                if(log != null){
+                    log.lastOperaAccID = 0;
+                    log.updateTime = DateTime.Now;
+                    if(restLog.applyStatus == 1){  
+                        log.punchStatus = punchCardFn.getStatusCode(wt, log, restLog);
                     }else{
-                        context.punchStatus &= ~psCode.takeLeave;
-                        if(context.logDate > DateTime.Now){
-                            _DbContext.Remove(context);
+                        log.punchStatus &= ~psCode.takeLeave;
+                        if(log.logDate > DateTime.Now && log.punchStatus == psCode.takeLeave){
+                            _DbContext.Remove(log);
                         }else{
-                            if(context.onlineTime.Year ==1 && context.offlineTime.Year ==1){
-                                context.punchStatus |= psCode.noWork;
+                            if(log.onlineTime.Year ==1 && log.offlineTime.Year ==1){
+                                log.punchStatus |= psCode.noWork;
                             }
                         }
                     }
@@ -172,8 +264,8 @@ namespace practice_mvc02.Repositories
                         PunchCardLog newLog = new PunchCardLog{
                             accountID = restLog.accountID, departmentID = departID,
                             logDate = startDate, createTime = DateTime.Now,
-                            punchStatus = psCode.takeLeave
                         };
+                        newLog.punchStatus = punchCardFn.getStatusCode(wt, newLog, restLog);
                         _DbContext.punchcardlogs.Add(newLog);
                         _DbContext.SaveChanges();
                     }
@@ -182,7 +274,7 @@ namespace practice_mvc02.Repositories
             }while(startDate <= endDate);
         }
 
-
+        
         #endregion //leaveOffice
 
 

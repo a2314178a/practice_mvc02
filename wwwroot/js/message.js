@@ -59,7 +59,7 @@ function refreshMessage(res){
             var dtTD = row.find("[name='dateTime']").text(dt.ymdText + "\n" + dt.hmText);
             dtTD.html(dtTD.html().replace(/\n/g, "<br/>"));
          
-            row.find("[name='title']").find('a').attr("onclick", "showContent("+value.id+");").text(value.title);
+            row.find("[name='title']").find('a').attr("onclick", `showContent(${value.id});`).text(value.title);
             row.find("[name='sendName']").text(value.userName);
 
             var receiveTD = $("#messageList").find("td[data-tmp='tmp']");
@@ -71,8 +71,8 @@ function refreshMessage(res){
             row.find("[name='receiveName']").attr("data-tmp","tmp");
             receiveName = value.userName;
 
-            row.find(".ignore_message").attr("onclick","ignoreMsg("+value.id+");");
-            row.find(".del_message").attr("onclick","delMsg("+value.id+");");
+            row.find(".ignore_message").attr("onclick", `ignoreMsg(${value.id});`);
+            row.find(".del_message").attr("onclick", `delMsg(${value.id});`);
             $("#messageList").append(row);
 
             var textRow = $(".template").find("[name='msgContentRow']").clone();
@@ -90,14 +90,14 @@ function refreshMessage(res){
 }
 
 function showContent(contentID){
-    $("#messageList").find("[data-id='"+contentID+"']").toggle();
+    $("#messageList").find(`[data-id='${contentID}']`).toggle();
 }
 
 function ignoreMsg(relatedID){
     var successFn = function(res){
         getReceiveMessage(0);
     };
-    myObj.cudAjaxFn("/Message/ignoreMessage", {relatedID:relatedID}, successFn);
+    myObj.cudAjaxFn("/Message/ignoreMessage", {relatedID}, successFn);
 }
 
 function delMsg(relatedID){
@@ -107,7 +107,7 @@ function delMsg(relatedID){
     var successFn = function(res){
         getReceiveMessage(1);
     };
-    myObj.cudAjaxFn("/Message/delMessage", {relatedID:relatedID}, successFn);
+    myObj.cudAjaxFn("/Message/delMessage", {relatedID}, successFn);
 }
 //#endregion new all message
 
@@ -193,7 +193,7 @@ function delMsg(relatedID){
     }else if($("#backupMsgDiv").length >0){
         var sel="sDel"
     }
-    myObj.cudAjaxFn("/Message/delMessage", {relatedID:relatedID, sel:sel}, successFn);
+    myObj.cudAjaxFn("/Message/delMessage", {relatedID, sel}, successFn);
 }
 
 //#endregion backup message

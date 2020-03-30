@@ -20,12 +20,10 @@ namespace practice_mvc02.Controllers
     {
         //private readonly ILogger<HomeController> _logger;
         public SetRuleRepository Repository { get; }
-        public loginFunction loginFn {get;}
 
         public SetRuleController(SetRuleRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
         }
 
         public IActionResult Index(string page)
@@ -143,10 +141,34 @@ namespace practice_mvc02.Controllers
             return Repository.DelLeave(leaveID);
         }
 
-
         #endregion //leaveTimeRule
 
+        //------------------------------------------------------------------------------------------------------
 
+        #region spLeaveRule
+
+        public object getAllSpLeaveRule(){
+            return Repository.GetAllSpLeaveRule();
+        }
+
+        public int addUpSpLeaveRule(AnnualLeaveRule data){
+            data.lastOperaAccID = (int)loginID;
+            if(data.ID == 0){
+               data.createTime = DateTime.Now;
+               return Repository.AddSpLeaveRule(data);
+            }else{
+                data.updateTime = DateTime.Now;
+                return Repository.UpdateSpLeaveRule(data);
+            }
+        }
+
+        public int delSpLeaveRule(int ruleID){
+            return Repository.DelSpLeaveRule(ruleID);
+        }
+
+        #endregion //spLeaveRule
+
+        //------------------------------------------------------------------------------------------------------
         
     }
 }

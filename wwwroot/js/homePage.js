@@ -1,6 +1,7 @@
 ﻿
 var myObj = new MyObj();
 
+
 $(document).ready(function() {  
     
     $("form").on("submit", function(e){ 

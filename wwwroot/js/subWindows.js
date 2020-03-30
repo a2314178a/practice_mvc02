@@ -132,26 +132,26 @@ function setThisAllManager(res){
     });
 }
 
-function getAccountDetail(editID){
+function getAccountDetail(employeeID){
     var getAccInfoSuccessFn = function(res){
         var accInfo = res.detail;
         $("input[name='account']").val(accInfo.account);
         $("input[name='userName']").val(accInfo.userName);
-        $("select[name='sex']").find("option[value='"+accInfo.sex+"']").prop("selected", "selected");
+        $("select[name='sex']").find(`option[value='${accInfo.sex}']`).prop("selected", "selected");
         $("input[name='humanID']").val(accInfo.humanID);
         $("input[name='birthday']").val(((accInfo.birthday).split("T"))[0]);
         $("input[name='startWorkDate']").val(((accInfo.startWorkDate).split("T"))[0]);
-        $("select[name='department']").find("option[value='"+accInfo.department+"']").prop("selected", "selected");
+        $("select[name='department']").find(`option[value='${accInfo.department}']`).prop("selected", "selected");
         setAllPosition(accInfo.department);
-        $("select[name='position']").find("option[value='"+ accInfo.departmentID +"']").prop("selected", true);
-        $("select[name='timeRule']").find("option[value='"+accInfo.timeRuleID+"']").prop("selected", true);
-        $("select[name='actAuthority']").find("option[value='"+accInfo.groupID+"']").prop("selected", true);
-        $("select[name='accLV']").find("option[value='"+accInfo.accLV+"']").prop("selected", true);
-        $("select[name='agent']").find("option[value='"+ accInfo.myAgentID +"']").prop("selected", true);
+        $("select[name='position']").find(`option[value='${accInfo.departmentID}']`).prop("selected", true);
+        $("select[name='timeRule']").find(`option[value='${accInfo.timeRuleID}']`).prop("selected", true);
+        $("select[name='actAuthority']").find(`option[value='${accInfo.groupID}']`).prop("selected", true);
+        $("select[name='accLV']").find(`option[value='${accInfo.accLV}']`).prop("selected", true);
+        $("select[name='agent']").find(`option[value='${accInfo.myAgentID}']`).prop("selected", true);
         $("input[name='agentEnable']").prop("checked", accInfo.agentEnable);
         setThisAllManager(res.manager);
     };
-    myObj.rAjaxFn("get", "/EmployeeList/getAccountDetail", {employeeID: editID}, getAccInfoSuccessFn);
+    myObj.rAjaxFn("get", "/EmployeeList/getAccountDetail", {employeeID}, getAccInfoSuccessFn);
 }
 
 function delThisSel(thisID){

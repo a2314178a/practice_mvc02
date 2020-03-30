@@ -33,7 +33,8 @@ function setAgent(res){
 
 function getMyDetail(){
     var getAccInfoSuccessFn = function(res){
-        refreshMyDetail(res);
+        refreshMyDetail(res.myDetail);
+        showMyAnnualLeave(res.myAnnualLeave);
     };
     myObj.rAjaxFn("get", "/EmployeeDetail/getMyDetail", null, getAccInfoSuccessFn);
 }
@@ -52,7 +53,7 @@ function refreshMyDetail(res){
     $("[name='position']").text(res.position);
     $("[name='humanID']").text(res.humanID);
     $("[name='startWorkDate']").text((res.startWorkDate).split("T")[0]);
-    $("select[name='agent']").find("option[value='"+ res.myAgentID +"']").prop("selected", true);
+    $("select[name='agent']").find(`option[value='${res.myAgentID}']`).prop("selected", true);
     $("input[name='agentEnable']").prop("checked", res.agentEnable);
     myObj.agent = {myAgentID: res.myAgentID, agentEnable: res.agentEnable};
     hideRow();
@@ -60,7 +61,7 @@ function refreshMyDetail(res){
 
 function hideRow(){
     $("#pwRow").find("input").val("");
-    $("select[name='agent']").find("option[value='"+ myObj.agent.myAgentID +"']").prop("selected", true);
+    $("select[name='agent']").find(`option[value='${myObj.agent.myAgentID}']`).prop("selected", true);
     $("input[name='agentEnable']").prop("checked", myObj.agent.agentEnable);
     $("[group='canEdit']").hide();
 }
@@ -71,6 +72,19 @@ function showRow(sel){
     }else if(sel ==2){
         $("#agentRow,#btnDiv").show();
     }
+}
+
+function showMyAnnualLeave(res){
+    var spDays = 0;
+    res.forEach((value)=>{
+        let remainDays = parseInt((value.remainHours)/8);
+        let remainHours = (value.remainHours)%8;
+        let dlDt = myObj.dateTimeFormat(value.deadLine);
+        let deadLine = `${remainDays} 天`+ (remainHours>0? `又 ${remainHours} 小時於 `:"於 ") + `${dlDt.ymdText} 到期`;
+        $("[name='spLeaveDeadLine']").append(`<div>${deadLine}</div>`);
+        spDays += value.specialDays;
+    });
+    $("[name='mySpLeave']").text(spDays + "天"); 
 }
 
 

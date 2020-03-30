@@ -19,12 +19,10 @@ namespace practice_mvc02.Controllers
     public class DepartmentListController : BaseController
     {
         public MasterRepository Repository { get; }
-        public loginFunction loginFn {get;}
 
         public DepartmentListController(MasterRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
         }
 
         public IActionResult Index()

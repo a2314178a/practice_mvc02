@@ -33,7 +33,10 @@ function init(){
         myObj.rAjaxFn("get", "/SetRule/getClassDepart", null, successFn); 
     }else if($("#leaveTimeDiv").length >0){
         showLeaveRule();
-    }  
+    }else if($("#annualLeaveDiv").length >0) {
+        showSpLeaveRule();
+        setOption();
+    }
 }
 
 
@@ -62,8 +65,8 @@ function refreshTimeRuleList(res){
         row.find("[name='endTime']").text(value.endTime);
         row.find("[name='sRestTime']").text(value.sRestTime);
         row.find("[name='eRestTime']").text(value.eRestTime);
-        row.find(".edit_timeRule").attr("onclick","editTimeRule(this,"+value.id+");");
-        row.find(".del_timeRule").attr("onclick","delTimeRule("+value.id+");");
+        row.find(".edit_timeRule").attr("onclick", `editTimeRule(this, ${value.id});`);
+        row.find(".del_timeRule").attr("onclick", `delTimeRule(${value.id});`);
         $("#timeRuleList").append(row);
      });
 }
@@ -79,28 +82,6 @@ function showAddTimeRuleRow(){
     addTimeRuleRow.find("a.cancel_timeRule").attr("onclick", "showTimeRule(this);");
     $('#timeRuleList').append(addTimeRuleRow);
 }
-
-/*function addTimeRule(thisBtn){
-    var thisRow =  $(thisBtn).closest("tr[name='addTimeRuleRow']");
-    var name = thisRow.find("[name='newName']").val();
-    var startTime = thisRow.find("[name='newStartTime']").val();
-    var endTime = thisRow.find("[name='newEndTime']").val();
-    var sRestTime = thisRow.find("[name='newSRestTime']").val();
-    var eRestTime = thisRow.find("[name='newERestTime']").val();
-
-    if(name == "" || startTime =="" || endTime == "" || sRestTime == "" || eRestTime == ""){
-        alert("欄位不可為空");
-        return;
-    }
-    var data = {
-        name, startTime, endTime, sRestTime, eRestTime   
-    };
-
-    var successFn = function(res){
-        showTimeRule();
-    }
-    myObj.cudAjaxFn("/SetRule/addTimeRule", data, successFn);
-}*/
 
 function addUpTimeRule(thisBtn, ID=0){
     var thisRow =  $(thisBtn).closest("tr[name='addTimeRuleRow']");
@@ -124,10 +105,6 @@ function addUpTimeRule(thisBtn, ID=0){
     myObj.cudAjaxFn("/SetRule/addUpTimeRule", data, successFn);
 }
 
-/*function cancelAddTimeRule(thisBtn){
-    showTimeRule();
-}*/
-
 function delTimeRule(timeRuleID){
     var msg = "您真的確定要刪除嗎？\n\n請確認！";
     if(confirm(msg)==false) 
@@ -139,7 +116,7 @@ function delTimeRule(timeRuleID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/SetRule/delTimeRule",{timeRuleID: timeRuleID},successFn);
+    myObj.cudAjaxFn("/SetRule/delTimeRule", {timeRuleID}, successFn);
 }
 
 function editTimeRule(thisBtn, timeRuleID){
@@ -159,34 +136,11 @@ function editTimeRule(thisBtn, timeRuleID){
     updateRuleRow.find("input[name='newSRestTime']").val(thisSRestTime);
     updateRuleRow.find("input[name='newERestTime']").val(thisERestTime);
     updateRuleRow.find("a.create_timeRule").remove();
-    updateRuleRow.find("a.update_timeRule").attr("onclick", "addUpTimeRule(this, "+ timeRuleID +")");
-    updateRuleRow.find("a.cancel_timeRule").attr("onclick", "showTimeRule(this)");
+    updateRuleRow.find("a.update_timeRule").attr("onclick", `addUpTimeRule(this, ${timeRuleID})`);
+    updateRuleRow.find("a.cancel_timeRule").attr("onclick", `showTimeRule(this)`);
 
     $(thisRow).after(updateRuleRow);
 }
-
-/*function updateTimeRule(thisBtn, timeRuleID){
-    var thisRow =  $(thisBtn).closest("tr[name='addTimeRuleRow']");
-    var name = thisRow.find("[name='newName']").val();
-    var startTime = thisRow.find("[name='newStartTime']").val();
-    var endTime = thisRow.find("[name='newEndTime']").val();
-    //var restTime = thisRow.find("[name='newRestTime']").val();
-    if(startTime =="" || endTime == "" ){
-        alert("欄位不可為空");
-        return;
-    }
-    var data = {
-        ID : timeRuleID,
-        name: name,
-        startTime : startTime,
-        endTime : endTime,
-        //restTime : restTime
-    };
-    var successFn = function(res){
-        showTimeRule();
-    }
-    myObj.cudAjaxFn("/SetRule/updateTimeRule", data, successFn);
-}*/
 
 //#endregion  timeRule
 
@@ -223,8 +177,8 @@ function refreshGroupList(res){
             $(obj).prop("disabled", "disabled");
         });
         row.find("[name='groupAuthority']").append(chkBox);
-        row.find(".edit_group").attr("onclick","editGroup(this,"+value.id+");");
-        row.find(".del_group").attr("onclick","delGroup("+value.id+");");
+        row.find(".edit_group").attr("onclick", `editGroup(this, ${value.id});`);
+        row.find(".del_group").attr("onclick", `delGroup(${value.id});`);
         $("#groupList").append(row);
      });
 }
@@ -280,7 +234,7 @@ function delGroup(groupID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/SetRule/delGroup",{groupID: groupID},successFn);
+    myObj.cudAjaxFn("/SetRule/delGroup",{groupID},successFn);
 }
 
 function editGroup(thisBtn, groupID){
@@ -298,8 +252,8 @@ function editGroup(thisBtn, groupID){
     updateGroupRow.find("[name='newGroupAuthority']").append(chkBox);
 
     updateGroupRow.find("a.create_group").remove();
-    updateGroupRow.find("a.update_group").attr("onclick", "updateGroup(this, "+ groupID +")");
-    updateGroupRow.find("a.cancel_group").attr("onclick", "cancelAddGroup(this)");
+    updateGroupRow.find("a.update_group").attr("onclick", `updateGroup(this, ${groupID})`);
+    updateGroupRow.find("a.cancel_group").attr("onclick", `cancelAddGroup(this)`);
 
     $(thisRow).after(updateGroupRow);
 }
@@ -358,8 +312,8 @@ function refreshSpDateList(res){
         row.find("input[name='statusVal']").val(value.status);
         row.find("[name='status']").text((value.status == 1? "休假" : "上班"));
         row.find("[name='note']").text(value.note);
-        row.find(".edit_spDate").attr("onclick","editSpecialDate(this,"+value.id+");");
-        row.find(".del_spDate").attr("onclick","delSpecialDate("+value.id+");");
+        row.find(".edit_spDate").attr("onclick", `editSpecialDate(this, ${value.id});`);
+        row.find(".del_spDate").attr("onclick", `delSpecialDate(${value.id});`);
         $("#specialDateList").append(row);
      });
 }
@@ -391,7 +345,7 @@ function delSpecialDate(spDateID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/SetRule/delSpecialDate",{spDateID: spDateID},successFn);
+    myObj.cudAjaxFn("/SetRule/delSpecialDate", {spDateID}, successFn);
 }
 
 function editSpecialDate(thisBtn, spDateID){
@@ -406,12 +360,12 @@ function editSpecialDate(thisBtn, spDateID){
 
     var updateSpDate = $(".template").find("[name='addSpecialDateRow']").clone();
     updateSpDate.find("input[name='newDate']").val(dateVal);
-    updateSpDate.find("select[name='needClassVal']").find(`option[value=${thisClass}]`).prop("selected", true);
-    updateSpDate.find("select[name='status']").find("option[value='"+thisStatus+"']").prop("selected", true);
+    updateSpDate.find("select[name='needClassVal']").find(`option[value='${thisClass}']`).prop("selected", true);
+    updateSpDate.find("select[name='status']").find(`option[value='${thisStatus}']`).prop("selected", true);
     updateSpDate.find("input[name='newNote']").val(thisNote);
 
     updateSpDate.find("a.create_spDate").remove();
-    updateSpDate.find("a.update_spDate").attr("onclick", "addUpSpecialDate(this, "+ spDateID +")");
+    updateSpDate.find("a.update_spDate").attr("onclick", `"addUpSpecialDate(this, ${spDateID})`);
     updateSpDate.find("a.cancel_spDate").attr("onclick", "celSpecialDate()");
 
     $(thisRow).after(updateSpDate);
@@ -473,8 +427,8 @@ function refreshLeaveRuleList(res){
             default : var unit =""; break;
         }
         row.find("[name='timeUnit']").text(unit);
-        row.find(".edit_leave").attr("onclick","editLeave(this,"+value.id+");");
-        row.find(".del_leave").attr("onclick","delLeave("+value.id+");");
+        row.find(".edit_leave").attr("onclick", `editLeave(this, ${value.id});`);
+        row.find(".del_leave").attr("onclick", `delLeave(${value.id});`);
         $("#leaveList").append(row);
      });
 }
@@ -525,7 +479,7 @@ function delLeave(leaveID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/SetRule/delLeave", {leaveID: leaveID}, successFn);
+    myObj.cudAjaxFn("/SetRule/delLeave", {leaveID}, successFn);
 }
 
 function editLeave(thisBtn, leaveID){
@@ -543,7 +497,7 @@ function editLeave(thisBtn, leaveID){
         }
     });
     updateLeaveRow.find("a.create_leave").remove();
-    updateLeaveRow.find("a.update_leave").attr("onclick", "addUpLeave(this, "+ leaveID +")");
+    updateLeaveRow.find("a.update_leave").attr("onclick", `addUpLeave(this, ${leaveID})`);
     updateLeaveRow.find("a.cancel_leave").attr("onclick", "cancelAddLeave(this)");
 
     $(thisRow).after(updateLeaveRow);
@@ -551,8 +505,130 @@ function editLeave(thisBtn, leaveID){
 
 //#endregion leaveTimeRule
 
+//------------------------------------------------------------------------------------------------
 
+//#region spLeaveRule
 
+function setOption(){
+    var yearSel = $(".template").find("select[name='yearSel']").append(new Option("半年", 0.5));
+    var spDaySel = $(".template").find("select[name='daySel']");
+    for(let i=1; i<=30; i++){
+        yearSel.append(new Option(`${i}年`, i));
+        spDaySel.append(new Option(`${i}天`, i));
+    }
 
+    var buffSel = $(".template").find("select[name='buffDaySel']").append(new Option("0天", 0));
+    for(let i=1; i<=12; i++){
+        buffSel.append(new Option(`${i}個月`, i));
+    }
+    buffSel.append(new Option("無期限", 1200)); //100year = 1200month
+}
 
+function showSpLeaveRule(){
+    $('.btnActive').css('pointer-events', "");
+    $(".add_spLeave").show();
+    getAllSpLeaveRule();
+}
+
+function getAllSpLeaveRule(){
+    var successFn = function(res){
+        refreshSpLeaveRuleList(res);
+    };
+    myObj.rAjaxFn("get", "/SetRule/getAllSpLeaveRule", null, successFn);
+}
+
+function refreshSpLeaveRuleList(res){
+    $("#spLeaveRuleList").empty();
+    res.forEach(function(value){
+        var row = $(".template").find("[name='spLeaveRow']").clone();
+        var yText = value.seniority == 0.5 ? "6個月" : value.seniority + "年";
+        row.find("[name='years']").text(yText);
+        row.find("[name='days']").text(value.specialDays + "天");
+        var buffTest = (value.buffDays/30) + "個月";
+        buffTest = value.buffDays==0? "0天" : value.buffDays==36000 ? "無期限" : buffTest;
+        row.find("[name='buffDays']").text(buffTest);
+        row.find(".edit_spLeave").attr("onclick",`editSpLeaveRule(this, ${value.id});`);
+        row.find(".del_spLeave").attr("onclick",`delSpLeaveRule(${value.id});`);
+        $("#spLeaveRuleList").append(row);
+     });
+}
+
+function showAddSpLeaveRow(){
+    $("#annualLeaveDiv").find("a.add_spLeave").hide();
+    $('.btnActive').css('pointer-events', "none"); 
+    var addSpLeaveRow = $(".template").find("[name='addSpLeaveRow']").clone();
+    addSpLeaveRow.find("a.update_spLeave").remove();
+    addSpLeaveRow.find("a.create_spLeave").attr("onclick", "addUpSpLeaveRule(this);");
+    addSpLeaveRow.find("a.cancel_spLeave").attr("onclick", "cancelAddSpLeave(this);");
+    $('#spLeaveRuleList').append(addSpLeaveRow);
+}
+
+function addUpSpLeaveRule(thisBtn, ruleID=0){
+    var thisRow = $(thisBtn).closest("tr[name='addSpLeaveRow']");
+    var seniority = $(thisRow).find("select[name='yearSel']").val();
+    var specialDays = $(thisRow).find("select[name='daySel']").val();
+    var buffDays = $(thisRow).find("select[name='buffDaySel']").val();
+    buffDays*=30;
+
+    var data={
+        ID:ruleID, seniority, specialDays, buffDays
+    };
+
+    var successFn = ()=>{
+        showSpLeaveRule();
+    }
+    myObj.cudAjaxFn("/SetRule/addUpSpLeaveRule", data, successFn);
+}
+
+function cancelAddSpLeave(thisBtn){
+    showSpLeaveRule();
+}
+
+function editSpLeaveRule(thisBtn, ruleID){
+    $('.btnActive').css('pointer-events', "none");
+
+    var thisRow = $(thisBtn).closest("tr[name='spLeaveRow']").hide();
+    var thisYear = thisRow.find("[name='years']").text();
+    thisYear = thisYear =="6個月"? "半年" : thisYear;
+    var thisSpDay = thisRow.find("[name='days']").text();
+    var thisBuffDay = thisRow.find("[name='buffDays']").text();
+
+    var upSpLeaveRow = $(".template").find("[name='addSpLeaveRow']").clone();
+    $.each(upSpLeaveRow.find("[name='yearSel']").find("option"), function(){
+        if($(this).text() == thisYear){
+            $(this).prop("selected", true);
+        }
+    });
+    $.each(upSpLeaveRow.find("[name='daySel']").find("option"), function(){
+        if($(this).text() == thisSpDay){
+            $(this).prop("selected", true);
+        }
+    });
+    $.each(upSpLeaveRow.find("[name='buffDaySel']").find("option"), function(){
+        if($(this).text() == thisBuffDay){
+            $(this).prop("selected", true);
+        }
+    });
+
+    upSpLeaveRow.find("a.create_spLeave").remove();
+    upSpLeaveRow.find("a.update_spLeave").attr("onclick", `addUpSpLeaveRule(this, ${ruleID})`);
+    upSpLeaveRow.find("a.cancel_spLeave").attr("onclick", "cancelAddSpLeave(this)");
+    $(thisRow).after(upSpLeaveRow);
+}
+
+function delSpLeaveRule(ruleID){
+    var msg = "您真的確定要刪除嗎？\n\n請確認！";
+    if(confirm(msg)==false) 
+        return;
+    var successFn = function(res){
+        if(res > 0){
+            showSpLeaveRule();
+        }else{
+            alert('fail');
+        }     
+    };
+    myObj.cudAjaxFn("/SetRule/delSpLeaveRule", {ruleID}, successFn);
+}
+
+//#endregion spLeaveRule
 

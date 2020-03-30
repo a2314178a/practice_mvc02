@@ -21,6 +21,8 @@ namespace practice_mvc02.Repositories
         public DbSet<workTimeTotal> worktimetotals {get; set;}
         public DbSet<EmployeePrincipal> employeeprincipals {get; set;}
         public DbSet<LeaveName> leavenames {get; set;}
+        public DbSet<AnnualLeaveRule> annualleaverule {get; set;}
+        public DbSet<EmployeeAnnualLeave> employeeannualleaves{get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {       
@@ -48,6 +50,7 @@ namespace practice_mvc02.Repositories
             modelBuilder.Entity<workTimeTotal>().HasIndex(b=>new{b.accountID, b.dateMonth}).IsUnique();
             modelBuilder.Entity<WorkTimeRule>().Property(b=>b.name).HasColumnType("varchar(255)");
             modelBuilder.Entity<SpecialDate>().Property(b=>b.departClass).HasColumnType("varchar(255)");
+            modelBuilder.Entity<AnnualLeaveRule>().HasIndex(b=>b.seniority).IsUnique();
         }
     }
 }

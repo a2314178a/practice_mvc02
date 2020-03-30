@@ -19,12 +19,10 @@ namespace practice_mvc02.Controllers
     public class MessageController : BaseController
     {
         public MessageRepository Repository { get; }
-        public loginFunction loginFn {get;}
 
         public MessageController(MessageRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
         }
 
         public IActionResult Index(string page)

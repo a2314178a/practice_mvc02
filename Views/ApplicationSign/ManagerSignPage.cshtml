@@ -21,14 +21,30 @@
                         <ul class="nav nav-tabs justify-content-end" group="table">                         
                             <span style="width:30px;"></span>
                             <li class="nav-item">
-                                <a class='nav-link @(@ViewBag.Page!="leave"?"active":"")' href="#" name="punchWarn" onclick="selPageContext(1);">打卡異常處理</a>
+                                <a class='nav-link @(@ViewBag.Page=="punch"?"active":"")' href="#" name="punchWarn" onclick="selPageContext(1);">打卡異常處理</a>
                             </li>
                             <li class="nav-item">
                                 <a class='nav-link @(@ViewBag.Page=="leave"?"active":"")' href="#" name="leaveSign" onclick="selPageContext(2);">出差/請假簽核</a>
                             </li>
+                            <li class="nav-item">
+                                <a class='nav-link @(@ViewBag.Page=="leaveLog"?"active":"")' href="#" name="leaveSignLog" onclick="selPageContext(3);">員工請假紀錄</a>
+                            </li>
                         </ul>
 
-                        @if(ViewBag.Page != "leave")
+                        @if(ViewBag.Page =="leaveLog")
+                        {
+                        <div id="searchFilterDiv" style="text-align:center; margin:20px auto;">
+                            <p>
+                                <form>
+                                    起始 Date: <input type="date" id="filter_sDate">&nbsp;&nbsp;&nbsp;&nbsp;
+                                    結束 Date: <input type="date" id="filter_eDate">
+                                    <input type="button" name="searchFilterBtn" value="搜尋">
+                                </form>
+                            </p>   
+                        </div>
+                        }
+
+                        @if(ViewBag.Page == "punch")
                         {
                             <div id="punchWarnDiv">
                                 <table class="table table-hover table-bordered punchLogWarn_table">
@@ -50,7 +66,7 @@
                         }
                         else
                         {
-                            <div id="leaveSignDiv">
+                            <div id="leaveSignDiv" name="@ViewBag.Page">
                                 <table class="table table-hover table-bordered applyLeave_table">
                                     <thead class="thead-dark" >
                                         <tr>
@@ -61,7 +77,10 @@
                                             <th scope="col">開始時間</th>
                                             <th scope="col">結束時間</th>
                                             <th scope="col">審核狀態</th>
+                                            @if(ViewBag.Page == "leave")
+                                            {
                                             <th scope="col" width="15%">管理動作</th>
+                                            }
                                         </tr>
                                     </thead> 
                                     <tbody id="applyLeaveList">
@@ -84,7 +103,7 @@
 
         <div class="template">
            <table>
-               @if(ViewBag.Page != "leave")
+               @if(ViewBag.Page == "punch")
                 {
                     <tr name="punchLogWarnRow">
                         <td scope="col" name="employeeName"></td>
@@ -128,10 +147,13 @@
                         <td scope="col" name="startTime"></td>
                         <td scope="col" name="endTime"></td>
                         <td scope="col" name="applyStatus"></td>
+                        @if(ViewBag.Page == "leave")
+                        {
                         <td scope="col" width="15%">
                             <a href="javascript:void(0);" class="btn btn-primary yes_applyLeave btnActive" >通過</a>
                             <a href="javascript:void(0);" class="btn btn-danger no_applyLeave btnActive" >不通過</a>
                         </td>
+                        }
                     </tr>
                 }
            </table>

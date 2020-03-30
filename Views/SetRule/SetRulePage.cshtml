@@ -30,6 +30,9 @@
                                 <a class='nav-link @(@ViewBag.Page=="leaveTimeRule"?"active":"")' href="#" name="leaveTimeRule" onclick="showSetRulePage('leaveTimeRule');">請假時間設定</a>
                             </li>
                             <li class="nav-item">
+                                <a class='nav-link @(@ViewBag.Page=="annualLeave"?"active":"")' href="#" name="annualLeave" onclick="showSetRulePage('annualLeave');">特休天數設定</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class='nav-link @(@ViewBag.Page=="groupRule"?"active":"")' href="#" name="groupRule" onclick="showSetRulePage('groupRule');">動作權限設定</a>
                             </li>
                         </ul>
@@ -88,6 +91,24 @@
                                     </tbody>
                                 </table>
                                 <a href="javascript:void(0);" class="btn btn-primary btnActive add_leave" style="float:right" onclick="showAddLeaveRow();">新增請假名稱</a>  
+                            </div>
+                        }
+                        else if(@ViewBag.Page == "annualLeave")
+                        {
+                            <div id="annualLeaveDiv">
+                                <table class="table table-hover table-bordered annualLeave_table">
+                                    <thead class="thead-dark" >
+                                        <tr>
+                                            <th scope="col">年資</th>
+                                            <th scope="col">特休天數</th>
+                                            <th scope="col">緩衝天數</th>
+                                            <th scope="col">管理動作</th>
+                                        </tr>
+                                    </thead> 
+                                    <tbody id="spLeaveRuleList">
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0);" class="btn btn-primary btnActive add_spLeave" style="float:right" onclick="showAddSpLeaveRow();">新增特休規則</a>
                             </div>
                         }
                         else if(ViewBag.Page == "groupRule")
@@ -240,6 +261,34 @@
                             <a href="javascript:void(0);" class="btn btn-primary create_leave" >新增</a>
                             <a href="javascript:void(0);" class="btn btn-primary update_leave" >更新</a>
                             <a href="javascript:void(0);" class="btn btn-danger cancel_leave" >取消</a>
+                        </td>
+                    </tr> 
+                }
+                else if(@ViewBag.Page == "annualLeave")
+                {
+                    <tr name="spLeaveRow">
+                        <td scope="col" name="years"></td>
+                        <td scope="col" name="days"></td>
+                        <td scope="col" name="buffDays"></td>
+                        <td scope="col">
+                            <a href="javascript:void(0);" class="btn btn-primary edit_spLeave btnActive" >編輯</a>
+                            <a href="javascript:void(0);" class="btn btn-danger del_spLeave btnActive" >刪除</a>
+                        </td>
+                    </tr>
+                    <tr name="addSpLeaveRow">
+                        <td scope="col" name="name">
+                            <select name="yearSel"></select>
+                        </td>
+                        <td scope="col" name="name">
+                            <select name="daySel"></select>
+                        </td>
+                        <td scope="col">
+                            <select name="buffDaySel"></select>
+                        </td>
+                        <td scope="col">
+                            <a href="javascript:void(0);" class="btn btn-primary create_spLeave" >新增</a>
+                            <a href="javascript:void(0);" class="btn btn-primary update_spLeave" >更新</a>
+                            <a href="javascript:void(0);" class="btn btn-danger cancel_spLeave" >取消</a>
                         </td>
                     </tr> 
                 }

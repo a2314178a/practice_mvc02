@@ -14,6 +14,12 @@ function init(){
     if($("#punchWarnDiv").length >0){
         getPunchLogWarn();
     }else if($("#leaveSignDiv").length >0){
+        var date = new Date();
+        var newDate = date.setDate(date.getDate() - 30);
+        var dtStart = myObj.dateTimeFormat(newDate);
+        $("#filter_sDate").val(dtStart.ymdHtml);
+        var dtEnd = myObj.dateTimeFormat();
+        $("#filter_eDate").val(dtEnd.ymdHtml);
         getApplyLeaveIng();
     }
 }
@@ -116,8 +122,7 @@ function updatePunchLog(thisBtn, logID){
         }
         cancelPunchLog();
     }
-    //myObj.cudAjaxFn("/PunchCard/forceUpdatePunchCardLog", {updatePunchLog: updatePunchLog, from:"applySign"}, successFn);
-    myObj.cudAjaxFn("/ApplicationSign/forceUpdatePunchCardLog", {updatePunchLog: updatePunchLog, from:"applySign"}, successFn);
+    myObj.cudAjaxFn("/PunchCard/forceUpdatePunchCardLog", {updatePunchLog: updatePunchLog, from:"applySign"}, successFn);
 }
 
 function cancelPunchLog(){
@@ -132,10 +137,13 @@ function cancelPunchLog(){
 //#region leaveSign
 
 function getApplyLeaveIng(){
+    var page = $("#leaveSignDiv").attr("name") == "leave"? 0 : 1;    
+    var sDate = $("#filter_sDate").val();
+    var eDate = $("#filter_eDate").val();
     var successFn = function(res){
         refreshApplyLeaveIng(res);
     };
-    myObj.rAjaxFn("post", "/ApplicationSign/getEmployeeApplyLeave", null, successFn);
+    myObj.rAjaxFn("post", `/ApplicationSign/getEmployeeApplyLeave?page=${page}`, null, successFn);
 }
 
 function refreshApplyLeaveIng(res){
@@ -149,23 +157,7 @@ function refreshApplyLeaveIng(res){
         var applyDateTD = row.find("[name='applyDate']").text(addTime.ymdText + "\n" + addTime.hmText);
         applyDateTD.html(applyDateTD.html().replace(/\n/g, "<br/>"));
 
-        row.find("input[name='applyTypeVal']").val(value.applyType);
-        var type = "";
-        switch(value.applyType){
-            case 1: type="出差"; break;
-            case 2: type="外出"; break;
-            case 3: type="特休"; break;
-            case 4: type="事假"; break;
-            case 5: type="病假"; break;
-            case 6: type="公假"; break;
-            case 7: type="調休"; break;
-            case 8: type="喪假"; break;
-            case 9: type="婚假"; break;
-            case 10: type="產假"; break;
-            case 11: type="陪產假"; break;
-            case 12: type="其他"; break;
-        };
-        row.find("[name='applyType']").text(type);
+        row.find("[name='applyType']").text(value.leaveName);
         row.find("[name='note']").text(value.note);
 
         var sTime = myObj.dateTimeFormat(value.startTime);
@@ -183,15 +175,18 @@ function refreshApplyLeaveIng(res){
         };
         row.find("[name='applyStatus']").text(status);
 
-        row.find(".yes_applyLeave").attr("onclick","isAgreeApplyLeave("+value.id+", 1);");
-        row.find(".no_applyLeave").attr("onclick","isAgreeApplyLeave("+value.id+", 2);");
+        row.find(".yes_applyLeave").attr("onclick",`isAgreeApplyLeave(this, ${value.id}, 1);`);
+        row.find(".no_applyLeave").attr("onclick",`isAgreeApplyLeave(this, ${value.id}, 2);`);
         $("#applyLeaveList").append(row);
     });
 }
 
-function isAgreeApplyLeave(applyLeaveID, isAgree){
+function isAgreeApplyLeave(thisBtn, applyLeaveID, isAgree){
+    var thisRow = $(thisBtn).closest("tr[name='applyLeaveRow']");
     var successFn = function(res){
-        getApplyLeaveIng();
+        if(res == 1){
+            thisRow.find("[name='applyStatus']").text(isAgree ==1? "通過" : "不通過");
+        }
     }
     myObj.cudAjaxFn("/ApplicationSign/isAgreeApplyLeave", {applyLeaveID: applyLeaveID, isAgree: isAgree}, successFn);
 }

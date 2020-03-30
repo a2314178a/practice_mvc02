@@ -95,6 +95,13 @@ namespace practice_mvc02.Repositories
             if(context != null){
                 _DbContext.Remove(context);
                 count = _DbContext.SaveChanges();
+                if(count == 1){
+                    var detail = _DbContext.employeedetails.FirstOrDefault(b=>b.accountID == employeeID);
+                    if(detail != null){
+                        _DbContext.Remove(detail);
+                        _DbContext.SaveChanges();
+                    }
+                }
             }
             return count;
         }
@@ -186,6 +193,13 @@ namespace practice_mvc02.Repositories
             return query.ToList();
         }
 
+        public object GetMyAnnualLeave(int employeeID){
+            var query = _DbContext.employeeannualleaves
+                            .Where(b=>b.employeeID == employeeID && b.deadLine > DateTime.Now)
+                            .Select(b=>new{b.specialDays, b.remainHours, b.deadLine})
+                            .OrderBy(b=>b.deadLine);
+            return query.ToList();
+        }
 
         #endregion  //employee CRUD
 

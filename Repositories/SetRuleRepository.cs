@@ -8,9 +8,10 @@ namespace practice_mvc02.Repositories
 {
     public class SetRuleRepository : BaseRepository
     {
-        public SetRuleRepository(DBContext dbContext):base(dbContext)
+        private AnnualLeaveRepository AnnualLeave {get;}
+        public SetRuleRepository(AnnualLeaveRepository repository, DBContext dbContext):base(dbContext)
         {
-            
+            this.AnnualLeave = repository;
         }
 
         #region timeRule CRUD
@@ -233,5 +234,84 @@ namespace practice_mvc02.Repositories
 
         #endregion //leaveRule
 
+        //--------------------------------------------------------------------------------------------------
+
+        #region spLeaveRule
+
+        public object GetAllSpLeaveRule(){
+            var query = _DbContext.annualleaverule.Select(
+                b=>new{b.ID, b.seniority, b.specialDays, b.buffDays}
+            ).OrderBy(b=>b.seniority);
+            return query.ToList();
+        }
+
+        public int AddSpLeaveRule(AnnualLeaveRule data){
+            int count = 0;
+            try{
+                _DbContext.annualleaverule.Add(data);
+                count = _DbContext.SaveChanges();
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            if(data.ID >0){
+                var targetID = AnnualLeave.FindLowOneThanThisRule(data.ID);
+                AnnualLeave.DelSomeAnnualLeaveRecord(new int[]{targetID});
+                AnnualLeave.StartCalAnnualLeave();
+            }
+            return count;
+        }
+
+        public int UpdateSpLeaveRule(AnnualLeaveRule data){
+            int count = 0;
+            float diffSeniority=0;
+            int diffSpecialDays=0, diffBuffDays=0;
+            try{
+                var context = _DbContext.annualleaverule.FirstOrDefault(b=>b.ID == data.ID);
+                if(context != null){
+                    diffSeniority =  data.seniority - context.seniority;
+                    diffSpecialDays = data.specialDays - context.specialDays;
+                    diffBuffDays = data.buffDays - context.buffDays;
+
+                    context.seniority = data.seniority;
+                    context.specialDays = data.specialDays;
+                    context.buffDays = data.buffDays;
+                    context.lastOperaAccID = data.lastOperaAccID;
+                    context.updateTime = data.updateTime;
+                    count = _DbContext.SaveChanges();
+                }
+            }catch(Exception e){
+                count = ((MySqlException)e.InnerException).Number;
+            }
+            if(count == 1){
+                if(diffSeniority !=0){
+                    var anotherID = AnnualLeave.FindLowOneThanThisRule(data.ID);
+                    AnnualLeave.DelSomeAnnualLeaveRecord(new int[]{data.ID, anotherID});
+                    AnnualLeave.StartCalAnnualLeave();
+                }else{
+                    AnnualLeave.UpEmployeeSpLeave(data.ID, diffSpecialDays, diffBuffDays);
+                } 
+            }
+//新增:找使用比她小1規則的年資移除重計算, 刪除:移除後重計算, 
+//修改:修改對應資料,若是修改年資, 找使用它與比它小1規則的年資移除重計算
+            return count;
+        }
+
+        public int DelSpLeaveRule(int ruleID){
+            int count = 0;
+            var context = _DbContext.annualleaverule.FirstOrDefault(b=>b.ID == ruleID);
+            if(context != null){
+                _DbContext.annualleaverule.Remove(context);
+                count = _DbContext.SaveChanges();
+            }
+            if(count == 1){
+                AnnualLeave.DelSomeAnnualLeaveRecord(new int[]{ruleID});
+                AnnualLeave.StartCalAnnualLeave();
+            }
+            return count;
+        }
+
+        #endregion  //spLeaveRule
+
+        //--------------------------------------------------------------------------------------------------
     }
 }

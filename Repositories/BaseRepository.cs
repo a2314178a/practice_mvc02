@@ -9,6 +9,7 @@ namespace practice_mvc02.Repositories
     public class BaseRepository
     {
         protected DBContext _DbContext {get;set;}
+        protected const string specialName = "特休";
 
         public BaseRepository(DBContext dbContext)
         {
@@ -32,7 +33,7 @@ namespace practice_mvc02.Repositories
                         select new{
                             a.account, a.userName, a.timeRuleID, a.groupID, a.accLV,
                             departmentID=b.ID, b.department, b.position, 
-                            c.sex, c.birthday, c.humanID, c.myAgentID, c.agentEnable, c.startWorkDate
+                            c.sex, c.birthday, c.humanID, c.myAgentID, c.agentEnable, c.startWorkDate,
                         }).FirstOrDefault();
             return detail;
         }

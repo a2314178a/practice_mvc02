@@ -19,12 +19,10 @@ namespace practice_mvc02.Controllers
     public class ApplicationSignController : BaseController
     {
         public ApplySignRepository Repository { get; }
-        public loginFunction loginFn {get;}
         
         public ApplicationSignController(ApplySignRepository repository, IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
         {
             this.Repository = repository;
-            this.loginFn = new loginFunction(repository);
         }
 
         public IActionResult Index(int type=1)
@@ -36,11 +34,12 @@ namespace practice_mvc02.Controllers
             ViewBag.ruleVal = ruleVal;
             ViewData["loginName"] = loginName;
             ViewBag.Auth = "Y";
-            ViewBag.Page = type==2 ? "leave" : "punch";
+            ViewBag.Page = type==3 ? "leaveLog" : type==2 ? "leave" : "punch";
             ViewBag.loginAccLV = loginAccLV;
             switch(type){
                 case 1: 
-                case 2: return View("ManagerSignPage");
+                case 2: 
+                case 3: return View("ManagerSignPage");
                 default: return RedirectToAction("logOut", "Home");
             }   
         }
@@ -66,7 +65,9 @@ namespace practice_mvc02.Controllers
         #region  LeaveOffice
 
         public object getEmployeeApplyLeave(int page=0){
-            return Repository.GetEmployeeApplyLeave((int)loginID, page);
+            var sDt = new DateTime(2000, 1, 1);
+            var eDt = DateTime.Now;
+            return Repository.GetEmployeeApplyLeave((int)loginID, page, sDt, eDt);
         }
 
         public int isAgreeApplyLeave(int applyLeaveID, int isAgree){

@@ -25,8 +25,8 @@ function refreshDepartList(res){
         row.find("[name='position']").text(value.position);
         row.find("[name='principalID']").val(value.accID);
         row.find("[name='principal']").text(value.userName);
-        row.find(".edit_depart").attr("onclick","editDepart(this,"+value.id+");");
-        row.find(".del_depart").attr("onclick","delDepart("+value.id+");");
+        row.find(".edit_depart").attr("onclick", `editDepart(this, ${value.id});`);
+        row.find(".del_depart").attr("onclick", `delDepart(${value.id});`);
         $("#departmentList").append(row);
      });
 }
@@ -83,7 +83,7 @@ function delDepart(departID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/DepartmentList/delDepartment",{departID: departID},successFn);
+    myObj.cudAjaxFn("/DepartmentList/delDepartment", {departID}, successFn);
 }
 
 function editDepart(thisBtn, departID){
@@ -105,7 +105,7 @@ function editDepart(thisBtn, departID){
             }
         });
         updateDepartRow.find("a.create_depart").remove();
-        updateDepartRow.find("a.update_depart").attr("onclick", "updateDepart(this, "+ departID +")");
+        updateDepartRow.find("a.update_depart").attr("onclick", `updateDepart(this, ${departID})`);
         updateDepartRow.find("a.cancel_depart").attr("onclick", "cancelCreateDepart(this)");
         $(thisRow).after(updateDepartRow);
     };

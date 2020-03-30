@@ -43,7 +43,9 @@ namespace practice_mvc02.Controllers
         //---------------------------------------------------------------------------------------
         
         public object getMyDetail(){
-            return Repository.GetAccountDetail((int)loginID);
+            var myDetail = Repository.GetAccountDetail((int)loginID);
+            var myAnnualLeave = Repository.GetMyAnnualLeave((int)loginID);
+            return new{myDetail, myAnnualLeave};
         }
 
         public object getSelOption(){

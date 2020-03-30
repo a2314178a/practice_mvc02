@@ -73,9 +73,7 @@ function getApplyLeave(){
             } 
         };
         var data ={
-            page : page,
-            sDate : sDate,
-            eDate : eDate
+            page, sDate, eDate
         };
         myObj.rAjaxFn("post", "/ApplyLeave/getMyApplyLeave", data, successFn);
     }else{
@@ -116,8 +114,8 @@ function refreshApplyLeaveIng(res){
         eTimeTD.html(eTimeTD.html().replace(/\n/g, "<br/>"));
         row.find("[name='endTime']").attr({"data-value":value.unitVal, "data-unit": value.unit});
     
-        row.find(".edit_applyLeave").attr("onclick","editApplyLeave(this,"+value.id+");");
-        row.find(".del_applyLeave").attr("onclick","delApplyLeave("+value.id+");");
+        row.find(".edit_applyLeave").attr("onclick",`editApplyLeave(this, ${value.id});`);
+        row.find(".del_applyLeave").attr("onclick",`delApplyLeave(${value.id});`);
         $("#applyLeaveList").append(row);
     });
 }
@@ -176,7 +174,7 @@ function editApplyLeave(thisBtn, applyingID){
 
     var updateRow = $(".template").find("[name='addApplyLeaveRow']").clone();
     updateRow.find("[name='newApplyDate']").append(thisApplyDate);
-    updateRow.find("select[name='newApplyType']").find("option[value='"+thisApplyTypeVal+"']").prop("selected", true);
+    updateRow.find("select[name='newApplyType']").find(`option[value='${thisApplyTypeVal}']`).prop("selected", true);
     updateRow.find("[name='newApplyNote']").val(thisNote);
     updateRow.find("[name='newStartDate']").val((thisStartTime.split("<br>")[0]).replace(new RegExp("/", "g"), "-"));
     updateRow.find("[name='newStartTime']").val(thisStartTime.split("<br>")[1]);
@@ -184,11 +182,10 @@ function editApplyLeave(thisBtn, applyingID){
     //updateRow.find("[name='newEndTime']").val(thisEndTime.split("<br>")[1]);
 
     updateRow.find("[name='newTimeLength']").val(thisValue);
-    updateRow.find(`option[value='${thisUnit}']`).prop("selected", true);
-
+    updateRow.find("select[name='newTimeUnit']").find(`option[value='${thisUnit}']`).prop("selected", true);
 
     updateRow.find("a.add_applyLeave").remove();
-    updateRow.find("a.up_applyLeave").attr("onclick", "addUpApplyLeave(this, "+ applyingID +")");
+    updateRow.find("a.up_applyLeave").attr("onclick", `addUpApplyLeave(this, ${applyingID})`);
     updateRow.find("a.cel_applyLeave").attr("onclick", "cancelApplyLeave()");
     $(thisRow).after(updateRow);
 }
@@ -204,7 +201,7 @@ function delApplyLeave(applyingID){
             alert('fail');
         }     
     };
-    myObj.cudAjaxFn("/ApplyLeave/delApplyLeave",{applyingID: applyingID},successFn);
+    myObj.cudAjaxFn("/ApplyLeave/delApplyLeave", {applyingID}, successFn);
 }
 
 function getApplyLeaveTime(thisRow){

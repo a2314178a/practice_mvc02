@@ -22,11 +22,12 @@ namespace practice_mvc02.Controllers
         public PunchCardRepository RepositoryPunch {get;}
         public punchCardFunction punchCardFn {get;}
 
-        public ApplyLeaveController(ApplySignRepository repository, PunchCardRepository repository02,IHttpContextAccessor httpContextAccessor):base(httpContextAccessor)
+        public ApplyLeaveController(ApplySignRepository repository, PunchCardRepository repository02,
+                                    IHttpContextAccessor httpContextAccessor, punchCardFunction fn):base(httpContextAccessor)
         {
             this.Repository = repository;
             this.RepositoryPunch = repository02;
-            this.punchCardFn = new punchCardFunction(repository02, httpContextAccessor);
+            this.punchCardFn = fn;
         }
 
         public IActionResult Index(string page)
@@ -58,8 +59,16 @@ namespace practice_mvc02.Controllers
 
         public int addUpApplyLeave(LeaveOfficeApply data){
             data.endTime = getLeaveEndTime(data);
-            int result = 0;
             data.accountID = data.lastOperaAccID = (int)loginID;
+
+            var leaveName = Repository.getApplyLeaveName(data.leaveID);
+            if(leaveName == Repository.spName){
+                if(!Repository.chkEmployeeAnnualLeave(data)){
+                    return -3;
+                }
+            }
+
+            int result = 0;
             data.principalID = (int)principalID;
             if(data.ID ==0){
                 data.createTime = DateTime.Now;

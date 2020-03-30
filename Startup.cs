@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using practice_mvc02.Repositories;
 using practice_mvc02.filters;
+using practice_mvc02.Models;
 
 namespace practice_mvc02
 {
@@ -45,7 +46,9 @@ namespace practice_mvc02
             services.AddTransient<PunchCardRepository>();
             services.AddTransient<SetRuleRepository>();
             services.AddTransient<ApplySignRepository>();
-            services.AddTransient<MessageRepository>(); 
+            services.AddTransient<MessageRepository>();
+            services.AddTransient<AnnualLeaveRepository>();
+            services.AddTransient<punchCardFunction>(); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
