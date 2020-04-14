@@ -24,7 +24,7 @@ namespace practice_mvc02.Models
             this.applySign = 0x0080;    //相關審核
         } 
     }
-
+    
     public class punchStatusCode
     {
         public int normal {get;}
@@ -46,7 +46,7 @@ namespace practice_mvc02.Models
         } 
     }
 
-
+    
 
 
 

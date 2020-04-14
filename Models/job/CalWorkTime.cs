@@ -39,13 +39,20 @@ namespace practice_mvc02.Models
 
         private void countWorkTime(List<PunchCardLog> thisMonthAllLog, WorkTimeRule thisWorkTime){
             double totalTime = 0.0;
-            double restTime = 1.0;
+            double restTime = 0.0;
             WorkDateTime workTime = punchCardFn.workTimeProcess(thisWorkTime);
-            var sWorkDt = workTime.sWorkDt;
-            var eWorkDt = workTime.eWorkDt;
-            var workAllTime = punchCardFn.getObjectValue("workAllTime", workTime);
-            var sWorkTime = sWorkDt.TimeOfDay;  //只取時間
-            var eWorkTime = eWorkDt.TimeOfDay;
+            var workAllTime = workTime.workAllTime;
+            var sWorkTime = workTime.sWorkDt.TimeOfDay;  //只取時間
+            var eWorkTime = workTime.eWorkDt.TimeOfDay;
+            var sRestTime = workTime.sRestDt.TimeOfDay;
+            var eRestTime = workTime.eRestDt.TimeOfDay;
+            var restlength = TimeSpan.Zero;
+            if(eRestTime < sRestTime){
+                restlength = eRestTime.Add(new TimeSpan(24,0,0)) - sRestTime;
+            }else{
+                restlength = eRestTime - sRestTime;
+            }
+            restTime = restlength.Hours + restlength.Minutes/60.0;
             foreach(var log in thisMonthAllLog){
                 if(log.onlineTime.Year == 1 || log.offlineTime.Year == 1 || log.onlineTime >= log.offlineTime){
                     continue;

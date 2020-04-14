@@ -51,6 +51,23 @@ namespace practice_mvc02.Repositories
             modelBuilder.Entity<WorkTimeRule>().Property(b=>b.name).HasColumnType("varchar(255)");
             modelBuilder.Entity<SpecialDate>().Property(b=>b.departClass).HasColumnType("varchar(255)");
             modelBuilder.Entity<AnnualLeaveRule>().HasIndex(b=>b.seniority).IsUnique();
+
+            /*modelBuilder.Entity<Account>().HasData(new Account{
+                ID = 1, account = "admin", password = "F6FDFFE48C908DEB0F4C3BD36C032E72", userName = "Administrator",
+                accLV=7, departmentID = 1, groupID = 1, timeRuleID = 0, createTime = DateTime.Now, updateTime = DateTime.Now
+            });
+            modelBuilder.Entity<Department>().HasData(new Department{
+                ID = 1, department = "董事", position = "董事長", principalID = 1, createTime = DateTime.Now, updateTime = DateTime.Now
+            });
+            modelBuilder.Entity<GroupRule>().HasData(new GroupRule{
+                ID = 1, groupName = "超級管理員", ruleParameter = 255 , createTime = DateTime.Now, updateTime = DateTime.Now
+            });
+            modelBuilder.Entity<EmployeeDetail>().HasData(new EmployeeDetail{
+                ID = 1, accountID = 1, birthday = DateTime.Now, startWorkDate = DateTime.Now, 
+                createTime = DateTime.Now, updateTime = DateTime.Now
+            });
+            */
+            
         }
     }
 }

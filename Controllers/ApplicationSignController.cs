@@ -64,10 +64,8 @@ namespace practice_mvc02.Controllers
 
         #region  LeaveOffice
 
-        public object getEmployeeApplyLeave(int page=0){
-            var sDt = new DateTime(2000, 1, 1);
-            var eDt = DateTime.Now;
-            return Repository.GetEmployeeApplyLeave((int)loginID, page, sDt, eDt);
+        public object getEmployeeApplyLeave(int page, DateTime sDate, DateTime eDate){
+            return Repository.GetEmployeeApplyLeave((int)loginID, page, sDate, eDate);
         }
 
         public int isAgreeApplyLeave(int applyLeaveID, int isAgree){

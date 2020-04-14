@@ -365,7 +365,7 @@ function editSpecialDate(thisBtn, spDateID){
     updateSpDate.find("input[name='newNote']").val(thisNote);
 
     updateSpDate.find("a.create_spDate").remove();
-    updateSpDate.find("a.update_spDate").attr("onclick", `"addUpSpecialDate(this, ${spDateID})`);
+    updateSpDate.find("a.update_spDate").attr("onclick", `addUpSpecialDate(this, ${spDateID})`);
     updateSpDate.find("a.cancel_spDate").attr("onclick", "celSpecialDate()");
 
     $(thisRow).after(updateSpDate);

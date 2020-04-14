@@ -3,6 +3,10 @@ var myObj = new MyObj();
 
 $(document).ready(function() {  
     init();
+
+    $("#searchFilterDiv").on("click", "[name='searchFilterBtn']", function(){
+        getEmployeeApplyLeave();
+    });
 });//.ready function
 
 
@@ -14,13 +18,15 @@ function init(){
     if($("#punchWarnDiv").length >0){
         getPunchLogWarn();
     }else if($("#leaveSignDiv").length >0){
-        var date = new Date();
-        var newDate = date.setDate(date.getDate() - 30);
-        var dtStart = myObj.dateTimeFormat(newDate);
-        $("#filter_sDate").val(dtStart.ymdHtml);
-        var dtEnd = myObj.dateTimeFormat();
-        $("#filter_eDate").val(dtEnd.ymdHtml);
-        getApplyLeaveIng();
+        if($("#searchFilterDiv").length >0){
+            var date = new Date();
+            var newDate = date.setDate(date.getDate() - 30);
+            var dtStart = myObj.dateTimeFormat(newDate);
+            $("#filter_sDate").val(dtStart.ymdHtml);
+            var dtEnd = myObj.dateTimeFormat();
+            $("#filter_eDate").val(dtEnd.ymdHtml);
+        }
+        getEmployeeApplyLeave();
     }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -136,14 +142,27 @@ function cancelPunchLog(){
 
 //#region leaveSign
 
-function getApplyLeaveIng(){
-    var page = $("#leaveSignDiv").attr("name") == "leave"? 0 : 1;    
-    var sDate = $("#filter_sDate").val();
-    var eDate = $("#filter_eDate").val();
-    var successFn = function(res){
-        refreshApplyLeaveIng(res);
-    };
-    myObj.rAjaxFn("post", `/ApplicationSign/getEmployeeApplyLeave?page=${page}`, null, successFn);
+function getEmployeeApplyLeave(){
+    if($("#searchFilterDiv").length >0){
+        var sDate = $("#filter_sDate").val();
+        var eDate = $("#filter_eDate").val();
+    }else{
+        var sDate = new Date(2000, 0, 1);   //=2000-01-01
+        var eDate = new Date(); //
+    }
+    
+    var page = $("#leaveSignDiv").attr("name") == "leave"? 0 : 1;
+    if(((sDate == "" && eDate == "") || (sDate != "" && eDate != "")) && sDate <= eDate){
+        var successFn = function(res){ 
+            refreshApplyLeaveIng(res);   
+        };
+        var data ={
+            page, sDate, eDate
+        };
+        myObj.rAjaxFn("post", "/ApplicationSign/getEmployeeApplyLeave", data, successFn);
+    }else{
+        alert("搜尋日期格式有誤");  return;
+    }
 }
 
 function refreshApplyLeaveIng(res){
@@ -188,7 +207,7 @@ function isAgreeApplyLeave(thisBtn, applyLeaveID, isAgree){
             thisRow.find("[name='applyStatus']").text(isAgree ==1? "通過" : "不通過");
         }
     }
-    myObj.cudAjaxFn("/ApplicationSign/isAgreeApplyLeave", {applyLeaveID: applyLeaveID, isAgree: isAgree}, successFn);
+    myObj.cudAjaxFn("/ApplicationSign/isAgreeApplyLeave", {applyLeaveID, isAgree}, successFn);
 }
 
 

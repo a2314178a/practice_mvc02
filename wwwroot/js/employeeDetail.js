@@ -76,15 +76,25 @@ function showRow(sel){
 
 function showMyAnnualLeave(res){
     var spDays = 0;
+    var spHours = 0;
     res.forEach((value)=>{
         let remainDays = parseInt((value.remainHours)/8);
         let remainHours = (value.remainHours)%8;
         let dlDt = myObj.dateTimeFormat(value.deadLine);
         let deadLine = `${remainDays} 天`+ (remainHours>0? `又 ${remainHours} 小時於 `:"於 ") + `${dlDt.ymdText} 到期`;
+        if(remainDays == 0 && remainHours == 0){
+            return;
+        }
         $("[name='spLeaveDeadLine']").append(`<div>${deadLine}</div>`);
-        spDays += value.specialDays;
+        spDays += remainDays;
+        spHours += remainHours;
     });
-    $("[name='mySpLeave']").text(spDays + "天"); 
+    if(spHours >=8){
+        spDays +=1;
+        spHours -=8;
+    }
+    var spText = `${spDays} 天` + (spHours >0? `又 ${spHours} 小時` : "");
+    $("[name='mySpLeave']").text(spText); 
 }
 
 

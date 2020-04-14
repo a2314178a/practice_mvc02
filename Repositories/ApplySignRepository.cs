@@ -109,6 +109,11 @@ namespace practice_mvc02.Repositories
             }catch(Exception e){
                 count = ((MySqlException)e.InnerException).Number;
             }
+            if(count == 1){
+                var leaveName = getApplyLeaveName(newApply.leaveID);
+                if(leaveName == specialName)
+                    refreshEmployeeAnnualLeave(newApply, 2);    //減時數
+            }
             return count;
         }
 
@@ -116,8 +121,12 @@ namespace practice_mvc02.Repositories
             int count = 0;
             var context = _DbContext.leaveofficeapplys.FirstOrDefault(b=>b.ID == applyLeaveID);
             if(context != null){
+                var leaveName = getApplyLeaveName(context.leaveID);
                 _DbContext.Remove(context);
                 count = _DbContext.SaveChanges();
+                if(count == 1 && leaveName == specialName){
+                    refreshEmployeeAnnualLeave(context, 1); //加時數
+                }
             }
             return count;
         }
@@ -146,10 +155,15 @@ namespace practice_mvc02.Repositories
             var leaveName = getApplyLeaveName(context.leaveID);
             if(context != null){
                 if(leaveName == specialName){   //申請假別為特休
-                    var oldStatus = context.applyStatus;
-                    if((oldStatus == 0 && newStatus == 1) || (oldStatus == 2 && newStatus == 1)){
+                    var oldStatus = context.applyStatus;    //0:待審 1:通過 2:未通過
+                    /*if((oldStatus == 0 && newStatus == 1) || (oldStatus == 2 && newStatus == 1)){
                         leaveStatus = 2;    //減特休時數
                     }else if((oldStatus == 1 && newStatus == 2) || (oldStatus == 1 && newStatus == 0)){
+                        leaveStatus = 1;    //加回特休時數
+                    }*/
+                    if((oldStatus == 2 && newStatus == 0) || (oldStatus == 2 && newStatus == 1)){
+                        leaveStatus = 2;    //減特休時數
+                    }else if((oldStatus == 1 && newStatus == 2) || (oldStatus == 0 && newStatus == 2)){
                         leaveStatus = 1;    //加回特休時數
                     }
                     if(!chkEmployeeAnnualLeave(context, leaveStatus)){
