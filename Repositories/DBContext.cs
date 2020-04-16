@@ -65,8 +65,8 @@ namespace practice_mvc02.Repositories
             modelBuilder.Entity<EmployeeDetail>().HasData(new EmployeeDetail{
                 ID = 1, accountID = 1, birthday = DateTime.Now, startWorkDate = DateTime.Now, 
                 createTime = DateTime.Now, updateTime = DateTime.Now
-            });
-            */
+            });*/
+            
             
         }
     }

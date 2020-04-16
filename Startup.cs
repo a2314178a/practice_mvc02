@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+//using Microsoft.Extensions.Hosting;
 using practice_mvc02.Repositories;
 using practice_mvc02.filters;
 using practice_mvc02.Models;
@@ -28,17 +29,14 @@ namespace practice_mvc02
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+           // services.AddControllersWithViews();
             services.AddEntityFrameworkMySql()
                     .AddDbContext<DBContext>(options=>options.UseMySql(Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<AccountRepository>();
 
-            services.AddMvc(config =>
-            {
-                //config.Filters.Add(new AuthorizationFilter());
-            });
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體中
             services.AddTimedJob(); //Add TimedJob services
@@ -52,7 +50,7 @@ namespace practice_mvc02
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {            
             if (env.IsDevelopment())
             {
@@ -68,14 +66,20 @@ namespace practice_mvc02
             app.UseStaticFiles();
             app.UseSession();
             app.UseTimedJob();  //使用TimedJob
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
+           // app.UseRouting();
+            //app.UseAuthorization();
+            /*app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            });*/
+            app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					name: "default",
+					template: "{controller=Home}/{action=Index}/{id?}");
+			});
         }
     }
 }
