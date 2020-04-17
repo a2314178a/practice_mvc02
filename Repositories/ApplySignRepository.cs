@@ -11,12 +11,13 @@ namespace practice_mvc02.Repositories
     {
         private punchStatusCode psCode;
         private punchCardFunction punchCardFn {get;} 
-        public string spName = specialName;
+        public string spName;
         
         public ApplySignRepository(DBContext dbContext, punchCardFunction fn):base(dbContext)
         {
             this.psCode = new punchStatusCode();
             this.punchCardFn = fn;
+            this.spName = specialName;
         }
 
         #region punchWarn
@@ -172,7 +173,7 @@ namespace practice_mvc02.Repositories
                 }
                 context.applyStatus = newStatus;
                 context.lastOperaAccID = loginID;
-                context.updateTime = DateTime.Now;
+                context.updateTime = definePara.dtNow();
                 count = _DbContext.SaveChanges();  
             }
             if(count == 1 && leaveName == specialName && leaveStatus >0){
@@ -227,7 +228,7 @@ namespace practice_mvc02.Repositories
                         remainHours = 0;
                     }
                     query[i].remainHours = remainHours;
-                    query[i].updateTime = DateTime.Now;
+                    query[i].updateTime = definePara.dtNow();
                 }
             }else if(leaveStatus == 1){ //加回時數
                 for(int i = query.Count-1; i>=0; i--){
@@ -240,7 +241,7 @@ namespace practice_mvc02.Repositories
                         applyHours = 0;
                     }
                     query[i].remainHours = remainHours;
-                    query[i].updateTime = DateTime.Now;  
+                    query[i].updateTime = definePara.dtNow();  
                 }
             }   
             _DbContext.SaveChanges();                       
@@ -256,15 +257,15 @@ namespace practice_mvc02.Repositories
             do{
                 var log = _DbContext.punchcardlogs.FirstOrDefault(b=>
                                         b.accountID == restLog.accountID && b.logDate == startDate);
-                WorkDateTime wt = punchCardFn.workTimeProcess(wtRule, log);
                 if(log != null){
                     log.lastOperaAccID = 0;
-                    log.updateTime = DateTime.Now;
+                    log.updateTime = definePara.dtNow();
                     if(restLog.applyStatus == 1){  
+                        WorkDateTime wt = punchCardFn.workTimeProcess(wtRule, log);
                         log.punchStatus = punchCardFn.getStatusCode(wt, log, restLog);
                     }else{
                         log.punchStatus &= ~psCode.takeLeave;
-                        if(log.logDate > DateTime.Now && log.punchStatus == psCode.takeLeave){
+                        if(log.logDate > definePara.dtNow() && log.punchStatus == psCode.takeLeave){
                             _DbContext.Remove(log);
                         }else{
                             if(log.onlineTime.Year ==1 && log.offlineTime.Year ==1){
@@ -277,8 +278,9 @@ namespace practice_mvc02.Repositories
                     if(restLog.applyStatus == 1){
                         PunchCardLog newLog = new PunchCardLog{
                             accountID = restLog.accountID, departmentID = departID,
-                            logDate = startDate, createTime = DateTime.Now,
+                            logDate = startDate, createTime = definePara.dtNow(),
                         };
+                        WorkDateTime wt = punchCardFn.workTimeProcess(wtRule, newLog);
                         newLog.punchStatus = punchCardFn.getStatusCode(wt, newLog, restLog);
                         _DbContext.punchcardlogs.Add(newLog);
                         _DbContext.SaveChanges();

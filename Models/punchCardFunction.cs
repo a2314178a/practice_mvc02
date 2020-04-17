@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using practice_mvc02.Repositories;
 using practice_mvc02.Models.dataTable;
+using practice_mvc02.Models;
 
 namespace practice_mvc02.Models
 {
@@ -32,56 +33,26 @@ namespace practice_mvc02.Models
         public int punchCardProcess(PunchCardLog logData, WorkTimeRule thisWorkTime, int action, int employeeID)
         {   
             WorkDateTime wt = workTimeProcess(thisWorkTime);
-            int resultCount = 0; //0:操作異常 1:成功 2:上班已打卡 3:現在時段不能打下班卡 4:不能補打上班時間
+            int resultCount = 0; //0:操作異常 1:成功 
             
             if(logData == null) //今日皆未打卡      
             {
                 logData = new PunchCardLog(){
                     accountID = employeeID, departmentID = (int)loginDepartmentID, logDate = wt.sWorkDt.Date,
-                    lastOperaAccID = (int)loginID, createTime = DateTime.Now
-                };
-
-                if(action == 0){    //下班
-                    if(DateTime.Now >= wt.sPunchDT && DateTime.Now <= wt.sWorkDt){
-                        return 3;
-                    }
-                    logData.offlineTime = DateTime.Now;
-                }else if(action == 1){  //上班
-                    if(DateTime.Now >= wt.eWorkDt){
-                        return 4;
-                    }
-                    logData.onlineTime = DateTime.Now;
-                }else{
-                    return 0;
-                }    
+                    lastOperaAccID = (int)loginID, onlineTime = definePara.dtNow(), createTime = definePara.dtNow()
+                };    
             }
             else   //今日有打過卡 or 電腦生成(跨日才有可能遇到)
             {
                 logData.lastOperaAccID = (int)loginID;
-                logData.updateTime = DateTime.Now;
-                if(action == 0) //打下班卡
-                {   
-                    if(DateTime.Now >= wt.sPunchDT && DateTime.Now <= wt.sWorkDt && logData.onlineTime.Year == 1){
-                        return 3;   //現在時段不能打下班卡
-                    }else{
-                        logData.offlineTime = DateTime.Now; 
-                    }
-                }
-                else if(action == 1)  //打上班卡
-                {  
-                    if(logData.onlineTime.Year != 1){    //已打上班卡
-                        return 2;   //上班已打卡
-                    }else{  
-                        if(DateTime.Now >= wt.eWorkDt || logData.offlineTime.Year !=1){
-                            return 4;   //不能補打上班時間
-                        }else{
-                            logData.onlineTime = DateTime.Now;                           
-                        }
-                    }
+                logData.updateTime = definePara.dtNow();
+
+                if(logData.onlineTime.Year ==1 && logData.offlineTime.Year ==1){
+                    logData.onlineTime = definePara.dtNow();
                 }else{
-                    return 0;
-                } 
-            }//Repository.AddPunchCardLog(logData);
+                    logData.offlineTime = definePara.dtNow();
+                }
+            }
             logData.punchStatus = getStatusCode(wt, logData);
             resultCount = logData.ID ==0? Repository.AddPunchCardLog(logData):Repository.UpdatePunchCard(logData);
             if(resultCount == 1 && logData.punchStatus > 1 && logData.punchStatus != psCode.takeLeave){    //一定要新增log成功 不然會沒logID
@@ -95,9 +66,9 @@ namespace practice_mvc02.Models
             processLog.logDate = wt.sWorkDt.Date;
             processLog.lastOperaAccID = (int)loginID;
             if(action == "update"){
-                processLog.updateTime = DateTime.Now;
+                processLog.updateTime = definePara.dtNow();
             }else{
-                processLog.createTime = DateTime.Now;
+                processLog.createTime = definePara.dtNow();
             }
             
             if(processLog.onlineTime.Year !=1){
@@ -124,10 +95,10 @@ namespace practice_mvc02.Models
       
         public WorkDateTime workTimeProcess(WorkTimeRule thisWorkTime, PunchCardLog customLog = null){
             var wt = new WorkDateTime();
-            wt.sWorkDt = DateTime.Now.Date;  //online work dateTime
-            wt.eWorkDt = DateTime.Now.Date;   //offline work dateTime
-            wt.sPunchDT = DateTime.Now.Date;  //可打卡時間
-            wt.ePunchDT = DateTime.Now.Date;  //
+            wt.sWorkDt = definePara.dtNow().Date;  //online work dateTime
+            wt.eWorkDt = definePara.dtNow().Date;   //offline work dateTime
+            wt.sPunchDT = definePara.dtNow().Date;  //可打卡時間
+            wt.ePunchDT = definePara.dtNow().Date;  //
             var sRest_start = new TimeSpan(0);
             var eRest_sRest = new TimeSpan(0);
             
@@ -153,12 +124,12 @@ namespace practice_mvc02.Models
                 wt.sPunchDT = wt.sWorkDt.AddHours(lessStHour);
                 wt.ePunchDT = wt.eWorkDt.AddHours(addEtHour);
                 if(customLog == null){
-                    if(DateTime.Now >= wt.ePunchDT){
+                    if(definePara.dtNow() >= wt.ePunchDT){
                         wt.sPunchDT = wt.sPunchDT.AddDays(1);
                         wt.ePunchDT = wt.ePunchDT.AddDays(1);
                         wt.sWorkDt = wt.sPunchDT.AddHours((lessStHour*-1));
                         wt.eWorkDt = wt.sPunchDT.AddHours((addEtHour*-1));
-                    }else if(DateTime.Now < wt.sPunchDT){
+                    }else if(definePara.dtNow() < wt.sPunchDT){
                         wt.sPunchDT = wt.sPunchDT.AddDays(-1);   
                         wt.ePunchDT = wt.ePunchDT.AddDays(-1);
                         wt.sWorkDt = wt.sPunchDT.AddHours((lessStHour*-1));
@@ -187,7 +158,7 @@ namespace practice_mvc02.Models
 
         public void processPunchlogWarn(PunchCardLog log, WorkTimeRule thisWorkTime){   //排程用
             WorkDateTime wt = workTimeProcess(thisWorkTime, log);
-            if(DateTime.Now < wt.ePunchDT){
+            if(definePara.dtNow() < wt.ePunchDT){
                 return;
             }
             log.punchStatus = getStatusCode(wt, log);
@@ -232,7 +203,7 @@ namespace practice_mvc02.Models
             else{
                 if(processLog.onlineTime.Year > 1){ //只有填上班
                     statusCode = processLog.onlineTime >wt.sWorkDt? (statusCode | psCode.lateIn) : statusCode;
-                    statusCode = DateTime.Now >= wt.ePunchDT ? (statusCode | psCode.hadLost) : statusCode; //打不到下班卡了
+                    statusCode = definePara.dtNow() >= wt.ePunchDT ? (statusCode | psCode.hadLost) : statusCode; //打不到下班卡了
                 }
                 else{   //只有填下班
                     statusCode |= psCode.hadLost;

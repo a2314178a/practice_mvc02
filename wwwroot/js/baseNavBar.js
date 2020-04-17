@@ -3,7 +3,7 @@
 
 $(document).ready(function() {  
 
-    //chkMsg.chkNewMessage();
+    chkMsg.chkNewMessage();
 
 });//.ready function
 
