@@ -21,6 +21,7 @@ namespace practice_mvc02
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    //.UseUrls("http://0.0.0.0:8001", "http://0.0.0.0:8765")
                 });
     }
 }
