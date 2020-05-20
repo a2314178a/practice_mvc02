@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\practice_mvc02.csproj",
+  "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\practice_mvc02.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "3.0",
@@ -20521,108 +20521,108 @@
   "RootNamespace": "practice_mvc02",
   "Documents": [
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\PunchCard\\TimeTotalPage.cshtml",
-      "TargetPath": "Views\\PunchCard\\TimeTotalPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\_ViewImports.cshtml",
-      "TargetPath": "Views\\_ViewImports.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Home\\employerPage.cshtml",
-      "TargetPath": "Views\\Home\\employerPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Message\\MessagePage.cshtml",
-      "TargetPath": "Views\\Message\\MessagePage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\_ViewStart.cshtml",
-      "TargetPath": "Views\\_ViewStart.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\SetRule\\SetRulePage.cshtml",
-      "TargetPath": "Views\\SetRule\\SetRulePage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Home\\Privacy.cshtml",
-      "TargetPath": "Views\\Home\\Privacy.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Shared\\_Layout.cshtml",
-      "TargetPath": "Views\\Shared\\_Layout.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Home\\Welcome.cshtml",
-      "TargetPath": "Views\\Home\\Welcome.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\EmployeeDetail\\EmployeeDetailPage.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\EmployeeDetail\\EmployeeDetailPage.cshtml",
       "TargetPath": "Views\\EmployeeDetail\\EmployeeDetailPage.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\ApplicationSign\\ManagerSignPage.cshtml",
-      "TargetPath": "Views\\ApplicationSign\\ManagerSignPage.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\PunchCard\\TimeTotalPage.cshtml",
+      "TargetPath": "Views\\PunchCard\\TimeTotalPage.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\PunchCard\\PunchCardLogPage.cshtml",
-      "TargetPath": "Views\\PunchCard\\PunchCardLogPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\DepartmentList\\DepartmentListPage.cshtml",
-      "TargetPath": "Views\\DepartmentList\\DepartmentListPage.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
-      "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\EmployeeList\\subPage\\addUpdateForm.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\EmployeeList\\subPage\\addUpdateForm.cshtml",
       "TargetPath": "Views\\EmployeeList\\subPage\\addUpdateForm.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\EmployeeList\\EmployeeListPage.cshtml",
-      "TargetPath": "Views\\EmployeeList\\EmployeeListPage.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\ApplicationSign\\ManagerSignPage.cshtml",
+      "TargetPath": "Views\\ApplicationSign\\ManagerSignPage.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\ApplyLeave\\ApplyLeavePage.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\ApplyLeave\\ApplyLeavePage.cshtml",
       "TargetPath": "Views\\ApplyLeave\\ApplyLeavePage.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\PunchCard\\PunchCardLogPage_cal.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\SetRule\\SetRulePage.cshtml",
+      "TargetPath": "Views\\SetRule\\SetRulePage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\PunchCard\\PunchCardLogPage_cal.cshtml",
       "TargetPath": "Views\\PunchCard\\PunchCardLogPage_cal.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Shared\\Error.cshtml",
-      "TargetPath": "Views\\Shared\\Error.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Home\\Privacy.cshtml",
+      "TargetPath": "Views\\Home\\Privacy.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\Home\\Index.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Home\\Welcome.cshtml",
+      "TargetPath": "Views\\Home\\Welcome.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Home\\Index.cshtml",
       "TargetPath": "Views\\Home\\Index.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02\\Views\\PunchCard\\PunchCardPage.cshtml",
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\_ViewImports.cshtml",
+      "TargetPath": "Views\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Home\\employerPage.cshtml",
+      "TargetPath": "Views\\Home\\employerPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\PunchCard\\PunchCardPage.cshtml",
       "TargetPath": "Views\\PunchCard\\PunchCardPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\DepartmentList\\DepartmentListPage.cshtml",
+      "TargetPath": "Views\\DepartmentList\\DepartmentListPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\EmployeeList\\EmployeeListPage.cshtml",
+      "TargetPath": "Views\\EmployeeList\\EmployeeListPage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Message\\MessagePage.cshtml",
+      "TargetPath": "Views\\Message\\MessagePage.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\_ViewStart.cshtml",
+      "TargetPath": "Views\\_ViewStart.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Shared\\_Layout.cshtml",
+      "TargetPath": "Views\\Shared\\_Layout.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+      "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\Shared\\Error.cshtml",
+      "TargetPath": "Views\\Shared\\Error.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\work_project\\Project_Project folder\\punchCardSystem\\practice_mvc02\\Views\\PunchCard\\PunchCardLogPage.cshtml",
+      "TargetPath": "Views\\PunchCard\\PunchCardLogPage.cshtml",
       "FileKind": "mvc"
     }
   ],

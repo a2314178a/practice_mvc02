@@ -8,6 +8,7 @@ $(document).ready(function() {
 });//.ready function
 
 function init(){
+    myObj.agent = {myAgentID: 0, agentEnable: false};
     $("[group='canEdit']").css("display","none");
     if($("select[name='agent']").length > 0){
         getSelOption();
@@ -60,10 +61,10 @@ function refreshMyDetail(res){
 }
 
 function hideRow(){
+    $("[group='canEdit']").hide();
     $("#pwRow").find("input").val("");
     $("select[name='agent']").find(`option[value='${myObj.agent.myAgentID}']`).prop("selected", true);
     $("input[name='agentEnable']").prop("checked", myObj.agent.agentEnable);
-    $("[group='canEdit']").hide();
 }
 
 function showRow(sel){
@@ -113,6 +114,8 @@ function updateMyDetail(){
 
     var data = {password: pw, myAgentID, agentEnable};
     var successFn = ()=>{
+        $("#pwRow,#btnDiv").hide();
+        $("#agentRow,#btnDiv").hide();
         getMyDetail();
     };
     myObj.cudAjaxFn("/EmployeeDetail/updateMyDetail", data, successFn);
