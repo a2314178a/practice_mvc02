@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20200526061628_annualDaysOffset")]
+    partial class annualDaysOffset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("accLV")
-                        .HasColumnType("int")
-                        .HasComment("1職員2單位主管3部門主管4處長廠長5協理6總經理7董事");
+                        .HasColumnType("int");
 
                     b.Property<string>("account")
                         .IsRequired()
@@ -89,8 +90,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("value")
-                        .HasColumnType("int")
-                        .HasComment("unit:hour");
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -113,8 +113,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("int");
 
                     b.Property<float>("seniority")
-                        .HasColumnType("float")
-                        .HasComment("unit:year");
+                        .HasColumnType("float");
 
                     b.Property<int>("specialDays")
                         .HasColumnType("int");
@@ -248,19 +247,16 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("employeeID")
-                        .HasColumnType("int")
-                        .HasComment("員工ID");
+                        .HasColumnType("int");
 
                     b.Property<int>("lastOperaAccID")
                         .HasColumnType("int");
 
                     b.Property<int>("principalAgentID")
-                        .HasColumnType("int")
-                        .HasComment("主管代理人ID");
+                        .HasColumnType("int");
 
                     b.Property<int>("principalID")
-                        .HasColumnType("int")
-                        .HasComment("主管ID");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
@@ -312,8 +308,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("timeUnit")
-                        .HasColumnType("int")
-                        .HasComment("1:全天 2:半天 3:小時");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
@@ -333,8 +328,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("applyStatus")
-                        .HasColumnType("int")
-                        .HasComment("0:申請中 1:通過 2:沒通過");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("createTime")
                         .HasColumnType("datetime(6)");
@@ -361,8 +355,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<byte>("unit")
-                        .HasColumnType("tinyint unsigned")
-                        .HasComment("1:全天 2:半天 3:小時");
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<float>("unitVal")
                         .HasColumnType("float");
@@ -420,8 +413,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("read")
-                        .HasColumnType("int(1)")
-                        .HasComment("0:未讀 1:已讀");
+                        .HasColumnType("int(1)");
 
                     b.Property<int>("receiveID")
                         .HasColumnType("int");
@@ -468,8 +460,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("punchStatus")
-                        .HasColumnType("int")
-                        .HasComment("0x01:正常 0x02:遲到 0x04:早退 0x08:加班 0x10:缺卡 0x20:曠職 0x40:請假");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
@@ -504,8 +495,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("warnStatus")
-                        .HasColumnType("int")
-                        .HasComment("0:未處理 1:已處理 2:忽略");
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -537,8 +527,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("status")
-                        .HasColumnType("int")
-                        .HasComment("1:休假 2:上班");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
@@ -605,8 +594,7 @@ namespace practice_mvc02.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<double>("totalTime")
-                        .HasColumnType("double")
-                        .HasComment("unit : minute");
+                        .HasColumnType("double");
 
                     b.Property<DateTime>("updateTime")
                         .HasColumnType("datetime(6)");
