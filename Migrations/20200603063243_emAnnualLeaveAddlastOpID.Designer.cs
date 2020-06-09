@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using practice_mvc02.Repositories;
 
 namespace practice_mvc02.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20200603063243_emAnnualLeaveAddlastOpID")]
+    partial class emAnnualLeaveAddlastOpID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -441,38 +443,6 @@ namespace practice_mvc02.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("msgsendreceive");
-                });
-
-            modelBuilder.Entity("practice_mvc02.Models.dataTable.OperateLog", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("active")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("category")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("content")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("employeeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("operateID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("remark")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("operateLogs");
                 });
 
             modelBuilder.Entity("practice_mvc02.Models.dataTable.PunchCardLog", b =>
