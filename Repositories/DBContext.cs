@@ -61,7 +61,10 @@ namespace practice_mvc02.Repositories
                 entity.Property(b=>b.principalAgentID).HasComment("主管代理人ID");
             });
 
-            modelBuilder.Entity<LeaveName>().Property(b=>b.timeUnit).HasComment("1:全天 2:半天 3:小時");
+            modelBuilder.Entity<LeaveName>(entity=>{
+                entity.Property(b=>b.enable).HasColumnType("tinyint(1)");
+                entity.Property(b=>b.timeUnit).HasComment("1:全天 2:半天 3:小時");
+            });
 
             modelBuilder.Entity<LeaveOfficeApply>(entity=>{
                 entity.Property(b=>b.applyStatus).HasComment("0:申請中 1:通過 2:沒通過");
@@ -112,7 +115,6 @@ namespace practice_mvc02.Repositories
                 ID = 1, account = defUid, password = md5password, userName = "DIMA_Admin",
                 accLV=definePara.getDIMALV(), departmentID = 0, groupID = 0, timeRuleID = 0, createTime = definePara.dtNow(), updateTime = definePara.dtNow()
             });
-                        
         }
 
         public string GetMD5(string original) 
