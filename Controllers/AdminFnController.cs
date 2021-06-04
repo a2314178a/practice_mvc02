@@ -132,6 +132,11 @@ namespace practice_mvc02.Controllers
             var count = aRepository.ClearMessageAndMsgSendReceive();
             return new{statusCode=(count==-1? 0 : 1), count};
         }
+
+        public String deadLineLess1Second(){
+            aRepository.DeadLineLess1Second();
+            return "OK";
+        }
         
     }
 

@@ -42,6 +42,7 @@ namespace practice_mvc02.Repositories
                     return;             //同樣條件的特休(只是期限與原先不同) 所作處理 120天為判斷   
             }
             data.createTime = dtNow;
+            data.deadLine = data.deadLine.AddSeconds(-1);
             _DbContext.employeeannualleaves.Add(data);
             result = _DbContext.SaveChanges();
             

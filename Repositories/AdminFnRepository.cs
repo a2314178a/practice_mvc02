@@ -121,6 +121,17 @@ namespace practice_mvc02.Repositories
                 return result;
             }     
         }
+
+        public void DeadLineLess1Second(){
+            var query = _DbContext.employeeannualleaves.Where(b=>b.deadLine > definePara.dtNow()).ToList();
+            foreach(var sp in query){
+                if(sp.deadLine.Year > 1 && sp.deadLine.Second == 0){
+                    sp.deadLine = sp.deadLine.AddSeconds(-1);
+                }
+            }
+            _DbContext.SaveChanges();
+            return;
+        }
  
     }
 }

@@ -82,7 +82,7 @@ namespace practice_mvc02.Repositories
                         opLog.employeeID = context.employeeID;
 
                         context.remainHours = data.remainHours;
-                        context.deadLine = data.deadLine;
+                        context.deadLine = data.deadLine.AddDays(1).AddSeconds(-1);
                         context.lastOperaAccID = data.lastOperaAccID;
                         context.updateTime = data.updateTime;
                         count = _DbContext.SaveChanges();
