@@ -19,7 +19,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Pomelo.AspNetCore.TimedJob" Version="2.0.0-rtm-10046" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.3.2" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.3.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
   </ItemGroup>

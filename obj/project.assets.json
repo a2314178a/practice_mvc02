@@ -7825,26 +7825,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\user768\\.nuget\\packages\\": {}
+    "C:\\Users\\StarWindy\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02_test\\practice_mvc02.csproj",
+      "projectUniqueName": "C:\\project_work\\csharp\\punchSys\\practice_mvc02\\practice_mvc02.csproj",
       "projectName": "practice_mvc02",
-      "projectPath": "C:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02_test\\practice_mvc02.csproj",
-      "packagesPath": "C:\\Users\\user768\\.nuget\\packages\\",
-      "outputPath": "C:\\work_project\\testtesttest\\TEST_TEST_TEST_TEST_TEST_TEST\\practice_mvc02_test\\obj\\",
+      "projectPath": "C:\\project_work\\csharp\\punchSys\\practice_mvc02\\practice_mvc02.csproj",
+      "packagesPath": "C:\\Users\\StarWindy\\.nuget\\packages\\",
+      "outputPath": "C:\\project_work\\csharp\\punchSys\\practice_mvc02\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\user768\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\StarWindy\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

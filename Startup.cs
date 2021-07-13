@@ -13,6 +13,10 @@ using Microsoft.Extensions.Hosting;
 using practice_mvc02.Repositories;
 using practice_mvc02.Models;
 using practice_mvc02.Middleware;
+using practice_mvc02.Models.job;
+using Quartz.Spi;
+using Quartz;
+using Quartz.Impl;
 
 namespace practice_mvc02
 {
@@ -40,8 +44,8 @@ namespace practice_mvc02
                 //config.Filters.Add(new AuthorizationFilter());
             });
             
-            services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體中
-            services.AddTimedJob(); //Add TimedJob services
+            services.AddDistributedMemoryCache();	// 將 Session 存在 ASP.NET Core 記憶體
+            
             services.AddTransient<MasterRepository>();
             services.AddTransient<PunchCardRepository>();
             services.AddTransient<SetRuleRepository>();
@@ -53,10 +57,13 @@ namespace practice_mvc02
             services.AddTransient<AnnualLogRepository>();
             services.AddTransient<AdminFnRepository>();
             services.AddTransient<ApplyOvertimeRepository>();
+            
+            services.AddTransient<MyJob>();      // 這裡使用瞬時依賴注入
+            services.AddSingleton<QuartzStartup>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {            
             if (env.IsDevelopment())
             {
@@ -72,7 +79,6 @@ namespace practice_mvc02
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-            app.UseTimedJob();  //使用TimedJob
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -81,6 +87,11 @@ namespace practice_mvc02
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            var quartz = app.ApplicationServices.GetRequiredService<QuartzStartup>();
+            lifetime.ApplicationStarted.Register(quartz.Start);
+            lifetime.ApplicationStopped.Register(quartz.Stop);
+
         }
     }
 }
